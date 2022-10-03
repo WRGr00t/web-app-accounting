@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,14 +24,14 @@ public class Controller {
         for (Record record : recordList) {
             System.out.println(record.toString());
         }
-        model.put("name", recordList.get(0).getName());
+        model.put("name", recordList.get(5).getName());
         return "greeting";
     }
 
     private static List<Record> ParseRecordCsv(String filePath) throws IOException {
         //Загружаем строки из файла
         List<Record> records = new ArrayList<>();
-        List<String> fileLines = Files.readAllLines(Paths.get(filePath));
+        List<String> fileLines = Files.readAllLines(Paths.get(filePath), StandardCharsets.UTF_8);
         for (String fileLine : fileLines) {
             String[] splitedText = fileLine.split(";");
             ArrayList<String> columnList = new ArrayList<>();
