@@ -13,6 +13,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @org.springframework.stereotype.Controller
 public class Controller {
@@ -46,12 +48,18 @@ public class Controller {
             }
             Record record = new Record();
             ArrayList<String> shiftList = new ArrayList<>();
+            Pattern pattern = Pattern.compile("([А-ЯЁ][а-яё]+[\\-\\s]?\\s[А-ЯЁ]?\\.$)");
+            Matcher matcher;
             if (columnList.size() > 0) {
                 int namePosition = 0;
                 int shiftBeginPosition = 3;
-                record.setName(columnList.get(namePosition));
-                for (int i = shiftBeginPosition; i < columnList.size(); i++) {
-                    shiftList.add((i - shiftBeginPosition + 1) + " - " + columnList.get(i));
+                String text = columnList.get(namePosition);
+                matcher = pattern.matcher(text);
+                if (matcher.find()) {
+                    record.setName(columnList.get(namePosition));
+                    for (int i = shiftBeginPosition; i < columnList.size(); i++) {
+                        shiftList.add((i - shiftBeginPosition + 1) + " - " + columnList.get(i));
+                    }
                 }
             }
             record.setDateList(shiftList);
