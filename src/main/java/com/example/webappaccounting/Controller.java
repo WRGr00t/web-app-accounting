@@ -1,5 +1,6 @@
 package com.example.webappaccounting;
 
+import com.example.webappaccounting.model.Employee;
 import com.opencsv.CSVReader;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,14 +20,14 @@ import java.util.regex.Pattern;
 @org.springframework.stereotype.Controller
 public class Controller {
     @GetMapping("/greeting")
-    public String greeting(@RequestParam(name="name", required=false, defaultValue="World") String name, Map<String, Object> model) throws Exception {
+    public String greeting(@RequestParam(name = "name", required = false, defaultValue = "World") String name, Map<String, Object> model) throws Exception {
         String path = "src/main/java/com/example/webappaccounting/graf.csv";
         List<Record> recordList = ParseRecordCsv(path);
 
         for (Record record : recordList) {
             System.out.println(record.toString());
         }
-        model.put("name", recordList.get(5).getName());
+        model.put("name", recordList.size());
         return "greeting";
     }
 
@@ -34,6 +35,8 @@ public class Controller {
         //Загружаем строки из файла
         List<Record> records = new ArrayList<>();
         List<String> fileLines = Files.readAllLines(Paths.get(filePath), StandardCharsets.UTF_8);
+        String currentMonth = "";
+        String currentYear = "";
         for (String fileLine : fileLines) {
             String[] splitedText = fileLine.split(";");
             ArrayList<String> columnList = new ArrayList<>();
@@ -48,22 +51,27 @@ public class Controller {
             }
             Record record = new Record();
             ArrayList<String> shiftList = new ArrayList<>();
-            Pattern pattern = Pattern.compile("([А-ЯЁ][а-яё]+[\\-\\s]?\\s[А-ЯЁ]?\\.$)");
-            Matcher matcher;
+
             if (columnList.size() > 0) {
                 int namePosition = 0;
                 int shiftBeginPosition = 3;
                 String text = columnList.get(namePosition);
-                matcher = pattern.matcher(text);
-                if (matcher.find()) {
-                    record.setName(columnList.get(namePosition));
+                if (text.startsWith("График работы")){
+                    String[] words = text.split(" ");
+                    currentMonth = words[3];
+                    currentYear = words[4];
+                    System.out.println(currentMonth);
+                }
+                if (IsName(text)) {
+                    record.setName(text);
                     for (int i = shiftBeginPosition; i < columnList.size(); i++) {
-                        shiftList.add((i - shiftBeginPosition + 1) + " - " + columnList.get(i));
+                        String currentColumn = columnList.get(i);
+                        shiftList.add((i - shiftBeginPosition + 1) + " " + currentMonth + " " + currentYear + " - " + currentColumn);
                     }
+                    record.setDateList(shiftList);
+                    records.add(record);
                 }
             }
-            record.setDateList(shiftList);
-            records.add(record);
         }
         return records;
     }
@@ -73,5 +81,12 @@ public class Controller {
         String trimText = text.trim();
         //Если в тексте одна ковычка и текст на нее заканчиваеться значит это часть предыдущей колонки
         return trimText.indexOf("\"") == trimText.lastIndexOf("\"") && trimText.endsWith("\"");
+    }
+
+    private static boolean IsName(String text) {
+        Pattern pattern = Pattern.compile("([А-ЯЁ][а-яё]+[\\-\\s]?\\s[А-ЯЁ]?\\.?$)");
+        Matcher matcher;
+        matcher = pattern.matcher(text);
+        return matcher.find();
     }
 }
