@@ -1,9 +1,7 @@
 package com.example.webappaccounting.model;
 
 import javax.persistence.*;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "shifts")
@@ -14,38 +12,38 @@ public class Shift {
     @Column(name = "id", nullable = false)
     private Long id;
     @Column(name = "shift_time", columnDefinition = "DATETIME", nullable = false)
-    LocalDate shiftDate;
+    private LocalDateTime shiftDate;
     @Column(columnDefinition = "VARCHAR(255)", nullable = false)
-    String interval;
+    private String description;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    /*@OneToMany(mappedBy = "shifts", cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(name = "shift2employee",
             joinColumns = {@JoinColumn(name = "employee_id")},
             inverseJoinColumns = {@JoinColumn(name = "shift_id")})
-    private Set<Shift> shifts;
+    private Set<Employee> employees = new HashSet<>();*/
 
     public Shift() {
     }
 
-    public Shift(LocalDate shiftDate, String interval) {
+    public Shift(LocalDateTime shiftDate, String description) {
         this.shiftDate = shiftDate;
-        this.interval = interval;
+        this.description = description;
     }
 
-    public LocalDate getShiftDate() {
+    public LocalDateTime getShiftDate() {
         return shiftDate;
     }
 
-    public void setShiftDate(LocalDate shiftDate) {
+    public void setShiftDate(LocalDateTime shiftDate) {
         this.shiftDate = shiftDate;
     }
 
-    public String getInterval() {
-        return interval;
+    public String getDescription() {
+        return description;
     }
 
-    public void setInterval(String interval) {
-        this.interval = interval;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Long getId() {
@@ -56,11 +54,19 @@ public class Shift {
         this.id = id;
     }
 
-    public Set<Shift> getShifts() {
-        return shifts;
+    /*public Set<Employee> getEmployees() {
+        return employees;
     }
 
-    public void setShifts(Set<Shift> shifts) {
-        this.shifts = shifts;
+    public void setEmployees(Set<Employee> employees) {
+        this.employees = employees;
+    }*/
+
+    @Override
+    public String toString() {
+        return "Shift{" +
+                "date=" + shiftDate +
+                ", interval = '" + description + '\'' +
+                '}';
     }
 }

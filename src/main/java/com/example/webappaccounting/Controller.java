@@ -1,7 +1,11 @@
 package com.example.webappaccounting;
 
 import com.example.webappaccounting.model.Employee;
+import com.example.webappaccounting.model.Shift;
+import com.example.webappaccounting.repository.EmployeeRepo;
+import com.example.webappaccounting.repository.ShiftRepo;
 import com.opencsv.CSVReader;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -11,7 +15,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -19,8 +26,13 @@ import java.util.regex.Pattern;
 
 @org.springframework.stereotype.Controller
 public class Controller {
+    @Autowired
+    private ShiftRepo shiftRepo;
+    @Autowired
+    private EmployeeRepo employeeRepo;
+
     @GetMapping("/greeting")
-    public String greeting(@RequestParam(name = "name", required = false, defaultValue = "World") String name, Map<String, Object> model) throws Exception {
+    public String greeting(@RequestParam(name="name", required=false, defaultValue="World") String name, Map<String, Object> model) throws Exception {
         String path = "src/main/java/com/example/webappaccounting/graf.csv";
         List<Record> recordList = ParseRecordCsv(path);
 
@@ -31,13 +43,28 @@ public class Controller {
         return "greeting";
     }
 
-    private static List<Record> ParseRecordCsv(String filePath) throws IOException {
+    public String main(Map<String, Object> model) {
+        Iterable<Shift> shifts = shiftRepo.findAll();
+        model.put("shifts", shifts);
+        return "main";
+    }
+
+    private List<Record> ParseRecordCsv(String filePath) throws IOException {
         //Загружаем строки из файла
         List<Record> records = new ArrayList<>();
         List<String> fileLines = Files.readAllLines(Paths.get(filePath), StandardCharsets.UTF_8);
         String currentMonth = "";
         String currentYear = "";
+        String currentType = "";
+
         for (String fileLine : fileLines) {
+            if (fileLine.startsWith("ГРАФИК")) {
+                int monthPosition = 3;
+                int yearPosition = 4;
+                String[] words = fileLine.split(" ");
+                currentMonth = words[monthPosition].toLowerCase();
+                currentYear = words[yearPosition];
+            }
             String[] splitedText = fileLine.split(";");
             ArrayList<String> columnList = new ArrayList<>();
             for (String s : splitedText) {
@@ -50,26 +77,47 @@ public class Controller {
                 }
             }
             Record record = new Record();
-            ArrayList<String> shiftList = new ArrayList<>();
+            ArrayList<Shift> shiftList = new ArrayList<>();
 
             if (columnList.size() > 0) {
                 int namePosition = 0;
                 int shiftBeginPosition = 3;
+                int typePosition = 1;
                 String text = columnList.get(namePosition);
-                if (text.startsWith("График работы")){
-                    String[] words = text.split(" ");
-                    currentMonth = words[3];
-                    currentYear = words[4];
-                    System.out.println(currentMonth);
-                }
+                HashSet<Employee> employees = new HashSet<>();
+                HashSet<Shift> shifts = new HashSet<>();
+
                 if (IsName(text)) {
+                    String type = columnList.get(typePosition);
+                    if (!type.isEmpty()) {
+                        currentType = type;
+                    }
                     record.setName(text);
                     for (int i = shiftBeginPosition; i < columnList.size(); i++) {
                         String currentColumn = columnList.get(i);
-                        shiftList.add((i - shiftBeginPosition + 1) + " " + currentMonth + " " + currentYear + " - " + currentColumn);
+                        if (!currentColumn.isEmpty()) {
+                            LocalDateTime dateShift = LocalDateTime.of(
+                                    Integer.parseInt(currentYear),
+                                    getNumberOfMonth(currentMonth),
+                                    (i - shiftBeginPosition + 1),
+                                    0, 0, 0);
+                            Shift shift = new Shift(dateShift,
+                                    currentColumn);
+                            Employee employee = new Employee(text, currentType);
+                            shiftList.add(shift);
+                            shifts.add(shift);
+                            employees.add(employee);
+                        }
+                    }
+                    for (Shift shift : shifts) {
+                        shiftRepo.save(shift);
+                    }
+                    for (Employee employee : employees) {
+                        employeeRepo.save(employee);
                     }
                     record.setDateList(shiftList);
                     records.add(record);
+
                 }
             }
         }
@@ -88,5 +136,49 @@ public class Controller {
         Matcher matcher;
         matcher = pattern.matcher(text);
         return matcher.find();
+    }
+
+    private static int getNumberOfMonth(String string) {
+        int number = 0;
+        string = string.toLowerCase();
+        switch (string) {
+            case "январь":
+                number = 1;
+                break;
+            case "февраль":
+                number = 2;
+                break;
+            case "март":
+                number = 3;
+                break;
+            case "апрель":
+                number = 4;
+                break;
+            case "май":
+                number = 5;
+                break;
+            case "июнь":
+                number = 6;
+                break;
+            case "июль":
+                number = 7;
+                break;
+            case "август":
+                number = 8;
+                break;
+            case "сентябрь":
+                number = 9;
+                break;
+            case "октябрь":
+                number = 10;
+                break;
+            case "ноябрь":
+                number = 11;
+                break;
+            case "декабрь":
+                number = 12;
+                break;
+        }
+        return number;
     }
 }

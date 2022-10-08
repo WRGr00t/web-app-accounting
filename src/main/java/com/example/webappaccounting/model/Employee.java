@@ -1,7 +1,6 @@
 package com.example.webappaccounting.model;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
 @Table(name = "employees")
@@ -14,12 +13,12 @@ public class Employee {
     @Column(name = "name", columnDefinition = "VARCHAR(255)", nullable = false)
     String name;
 
-    String shiftCode;
-    @Column(name = "is_english_speaking", columnDefinition = "TINYINT")
-    boolean isEnglishSpeaking;
+    @Column(name = "shift_type", columnDefinition = "VARCHAR(255)")
+    String shiftType;
 
-    @ManyToMany(mappedBy = "shifts", fetch = FetchType.LAZY)
-    private Set<Shift> shifts;
+    /*@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shifts_id")
+    private Set<Shift> shifts;*/
 
     public Long getId() {
         return id;
@@ -32,10 +31,10 @@ public class Employee {
     public Employee() {
     }
 
-    public Employee(String name, String shiftCode, boolean isEnglishSpeaking) {
+    public Employee(String name, String description) {
         this.name = name;
-        this.shiftCode = shiftCode;
-        this.isEnglishSpeaking = isEnglishSpeaking;
+        this.shiftType = description;
+
     }
 
     public String getName() {
@@ -46,19 +45,11 @@ public class Employee {
         this.name = name;
     }
 
-    public String getShiftCode() {
-        return shiftCode;
+    public String getShiftType() {
+        return shiftType;
     }
 
-    public void setShiftCode(String shiftCode) {
-        this.shiftCode = shiftCode;
-    }
-
-    public boolean isEnglishSpeaking() {
-        return isEnglishSpeaking;
-    }
-
-    public void setEnglishSpeaking(boolean englishSpeaking) {
-        isEnglishSpeaking = englishSpeaking;
+    public void setShiftType(String shiftType) {
+        this.shiftType = shiftType;
     }
 }

@@ -1,19 +1,21 @@
 package com.example.webappaccounting;
 
+import com.example.webappaccounting.model.Shift;
+
 import java.util.ArrayList;
 
 public class Record {
-    String name;
-    ArrayList<String> dateList;
+    private String name;
+    private ArrayList<Shift> shifts;
 
-    public Record(String name, ArrayList<String> dateList) {
+    public Record(String name, ArrayList<Shift> dateList) {
         this.name = name;
-        this.dateList = dateList;
+        this.shifts = dateList;
     }
 
     public Record() {
         this.name = "";
-        this.dateList = new ArrayList<>();
+        this.shifts = new ArrayList<>();
     }
 
     public String getName() {
@@ -24,19 +26,19 @@ public class Record {
         this.name = name;
     }
 
-    public ArrayList<String> getDateList() {
-        return dateList;
+    public ArrayList<Shift> getShifts() {
+        return shifts;
     }
 
-    public void setDateList(ArrayList<String> dateList) {
-        this.dateList = dateList;
+    public void setDateList(ArrayList<Shift> shifts) {
+        this.shifts = shifts;
     }
 
     @Override
     public String toString() {
         StringBuilder dates = new StringBuilder();
-        for (String str : dateList) {
-            dates.append(str);
+        for (Shift shift : shifts) {
+            dates.append(shift);
             dates.append(", ");
         }
 
