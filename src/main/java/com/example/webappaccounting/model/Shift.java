@@ -2,10 +2,11 @@ package com.example.webappaccounting.model;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "shifts")
-public class Shift {
+public class Shift implements Comparable<Shift>{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -73,5 +74,27 @@ public class Shift {
                 ", interval = '" + description + '\'' +
                 ", employee = '" + employee + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Shift shift = (Shift) obj;
+        return Objects.equals(shiftDate, shift.shiftDate) &&
+                Objects.equals(description, shift.description) &&
+                Objects.equals(employee, shift.employee);
+    }
+
+    @Override
+    public int compareTo(Shift o) {
+        int result = this.shiftDate.compareTo(o.shiftDate);
+        if (result == 0) {
+            result = this.description.compareTo(o.description);
+            if (result == 0) {
+                result = this.employee.compareTo(o.employee);
+            }
+        }
+        return result;
     }
 }

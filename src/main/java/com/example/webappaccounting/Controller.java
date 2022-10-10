@@ -12,10 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,12 +45,14 @@ public class Controller {
         //Загружаем строки из файла
         List<Record> records = new ArrayList<>();
         List<String> fileLines = Files.readAllLines(Paths.get(filePath), StandardCharsets.UTF_8);
-        String currentMonth = "";
-        String currentYear = "";
+        String currentMonth = "0";
+        String currentYear = "2022";
         String currentType = "";
+        TreeSet<Employee> employees = new TreeSet<>();
+        TreeSet<Shift> shifts = new TreeSet<>();
 
         for (String fileLine : fileLines) {
-            if (fileLine.startsWith("ГРАФИК")) {
+            if (isFindNewMonth(fileLine)) {
                 int monthPosition = 3;
                 int yearPosition = 4;
                 String[] words = fileLine.split(" ");
@@ -79,8 +78,6 @@ public class Controller {
                 int shiftBeginPosition = 3;
                 int typePosition = 1;
                 String text = columnList.get(namePosition);
-                HashSet<Employee> employees = new HashSet<>();
-                HashSet<Shift> shifts = new HashSet<>();
 
                 if (IsName(text)) {
                     String type = columnList.get(typePosition);
@@ -105,17 +102,31 @@ public class Controller {
                             employees.add(employee);
                         }
                     }
-                    for (Shift shift : shifts) {
-                        shiftRepo.save(shift);
-                    }
-                    for (Employee employee : employees) {
-                        employeeRepo.save(employee);
-                    }
                     record.setDateList(shiftList);
                     records.add(record);
 
                 }
             }
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Сегодня в смене:")
+                .append("\n");
+        for (Shift shift : shifts) {
+            if (shift.getShiftDate().isAfter(LocalDateTime.now().minusDays(1)) && shift.getShiftDate().isBefore(LocalDateTime.now())){
+                stringBuilder.append(shift.getEmployee().getName())
+                        .append(" ")
+                        .append(shift.getDescription())
+                        .append("\n");
+            }
+        }
+        System.out.println(stringBuilder);
+
+        for (Shift shift : shifts) {
+            shiftRepo.save(shift);
+        }
+        for (Employee employee : employees) {
+            employeeRepo.save(employee);
         }
         return records;
     }
@@ -176,5 +187,9 @@ public class Controller {
                 break;
         }
         return number;
+    }
+
+    private static boolean isFindNewMonth(String line) {
+        return Pattern.compile(Pattern.quote("ГРАФИК"), Pattern.CASE_INSENSITIVE).matcher(line).find();
     }
 }
