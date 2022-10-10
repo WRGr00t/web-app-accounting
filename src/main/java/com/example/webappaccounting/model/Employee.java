@@ -11,10 +11,10 @@ public class Employee {
     private Long id;
 
     @Column(name = "name", columnDefinition = "VARCHAR(255)", nullable = false)
-    String name;
+    private String name;
 
     @Column(name = "shift_type", columnDefinition = "VARCHAR(255)")
-    String shiftType;
+    private String shiftType;
 
     /*@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shifts_id")

@@ -4,18 +4,13 @@ import com.example.webappaccounting.model.Employee;
 import com.example.webappaccounting.model.Shift;
 import com.example.webappaccounting.repository.EmployeeRepo;
 import com.example.webappaccounting.repository.ShiftRepo;
-import com.opencsv.CSVReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import java.io.IOException;
-import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -101,9 +96,10 @@ public class Controller {
                                     getNumberOfMonth(currentMonth),
                                     (i - shiftBeginPosition + 1),
                                     0, 0, 0);
-                            Shift shift = new Shift(dateShift,
-                                    currentColumn);
                             Employee employee = new Employee(text, currentType);
+                            Shift shift = new Shift(dateShift,
+                                    currentColumn,
+                                    employee);
                             shiftList.add(shift);
                             shifts.add(shift);
                             employees.add(employee);

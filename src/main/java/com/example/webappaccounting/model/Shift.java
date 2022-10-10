@@ -16,11 +16,9 @@ public class Shift {
     @Column(columnDefinition = "VARCHAR(255)", nullable = false)
     private String description;
 
-    /*@OneToMany(mappedBy = "shifts", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinTable(name = "shift2employee",
-            joinColumns = {@JoinColumn(name = "employee_id")},
-            inverseJoinColumns = {@JoinColumn(name = "shift_id")})
-    private Set<Employee> employees = new HashSet<>();*/
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "employee_id")
+    private Employee employee;
 
     public Shift() {
     }
@@ -28,6 +26,12 @@ public class Shift {
     public Shift(LocalDateTime shiftDate, String description) {
         this.shiftDate = shiftDate;
         this.description = description;
+    }
+
+    public Shift(LocalDateTime shiftDate, String description, Employee employee) {
+        this.shiftDate = shiftDate;
+        this.description = description;
+        this.employee = employee;
     }
 
     public LocalDateTime getShiftDate() {
@@ -54,19 +58,20 @@ public class Shift {
         this.id = id;
     }
 
-    /*public Set<Employee> getEmployees() {
-        return employees;
+    public Employee getEmployee() {
+        return employee;
     }
 
-    public void setEmployees(Set<Employee> employees) {
-        this.employees = employees;
-    }*/
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+    }
 
     @Override
     public String toString() {
         return "Shift{" +
                 "date=" + shiftDate +
                 ", interval = '" + description + '\'' +
+                ", employee = '" + employee + '\'' +
                 '}';
     }
 }
