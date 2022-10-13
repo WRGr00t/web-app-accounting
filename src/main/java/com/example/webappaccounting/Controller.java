@@ -36,8 +36,9 @@ public class Controller {
     }
 
     public String main(Map<String, Object> model) {
-        Iterable<Shift> shifts = shiftRepo.findAll();
-        model.put("shifts", shifts);
+        //Iterable<Shift> shifts = shiftRepo.findAll();
+        //model.put("shifts", shifts);
+
         return "main";
     }
 
@@ -45,14 +46,15 @@ public class Controller {
         //Загружаем строки из файла
         List<Record> records = new ArrayList<>();
         List<String> fileLines = Files.readAllLines(Paths.get(filePath), StandardCharsets.UTF_8);
-        String currentMonth = "0";
-        String currentYear = "2022";
+        String currentMonth = "";
+        String currentYear = "";
         String currentType = "";
         TreeSet<Employee> employees = new TreeSet<>();
         TreeSet<Shift> shifts = new TreeSet<>();
 
         for (String fileLine : fileLines) {
-            if (isFindNewMonth(fileLine)) {
+            if (isNewMonth(fileLine)) {
+                System.out.println("yes - " + fileLine);
                 int monthPosition = 3;
                 int yearPosition = 4;
                 String[] words = fileLine.split(" ");
@@ -191,5 +193,11 @@ public class Controller {
 
     private static boolean isFindNewMonth(String line) {
         return Pattern.compile(Pattern.quote("ГРАФИК"), Pattern.CASE_INSENSITIVE).matcher(line).find();
+    }
+
+    private static boolean isNewMonth(String string) {
+        String substring = "ГРАФИК РАБОТЫ НА";
+        substring = substring.toLowerCase();
+        return string.toLowerCase().contains(substring);
     }
 }
