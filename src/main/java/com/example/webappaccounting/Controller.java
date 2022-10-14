@@ -26,25 +26,26 @@ public class Controller {
     @GetMapping("/greeting")
     public String greeting(@RequestParam(name="name", required=false, defaultValue="World") String name, Map<String, Object> model) throws Exception {
         String path = "src/main/java/com/example/webappaccounting/graf.csv";
-        List<Record> recordList = ParseRecordCsv(path);
+        Set<Shift> shifts = ParseRecordCsv(path);
 
-        for (Record record : recordList) {
-            System.out.println(record.toString());
+        for (Shift shift : shifts) {
+            System.out.println(shift.toString());
         }
-        model.put("name", recordList.size());
+        model.put("name", shifts.size());
         return "greeting";
     }
-
-    public String main(Map<String, Object> model) {
+    @GetMapping("/")
+    public String main(Map<String, Object> model) throws IOException {
         //Iterable<Shift> shifts = shiftRepo.findAll();
         //model.put("shifts", shifts);
-
+        String path = "src/main/java/com/example/webappaccounting/graf.csv";
+        Set<Shift> shifts = ParseRecordCsv(path);
+        model.put("shifts", shifts);
         return "main";
     }
 
-    private List<Record> ParseRecordCsv(String filePath) throws IOException {
+    private Set<Shift> ParseRecordCsv(String filePath) throws IOException {
         //Загружаем строки из файла
-        List<Record> records = new ArrayList<>();
         List<String> fileLines = Files.readAllLines(Paths.get(filePath), StandardCharsets.UTF_8);
         String currentMonth = "";
         String currentYear = "";
@@ -104,9 +105,6 @@ public class Controller {
                             employees.add(employee);
                         }
                     }
-                    record.setDateList(shiftList);
-                    records.add(record);
-
                 }
             }
         }
@@ -130,7 +128,7 @@ public class Controller {
         for (Employee employee : employees) {
             employeeRepo.save(employee);
         }
-        return records;
+        return shifts;
     }
 
     //Проверка является ли колонка частью предыдущей колонки
