@@ -1,5 +1,6 @@
-package com.example.webappaccounting;
+package com.example.webappaccounting.controller;
 
+import com.example.webappaccounting.Record;
 import com.example.webappaccounting.model.Employee;
 import com.example.webappaccounting.model.Shift;
 import com.example.webappaccounting.repository.EmployeeRepo;
@@ -40,7 +41,13 @@ public class Controller {
         //model.put("shifts", shifts);
         String path = "src/main/java/com/example/webappaccounting/graf.csv";
         Set<Shift> shifts = ParseRecordCsv(path);
-        model.put("shifts", shifts);
+        ArrayList<Shift> list = new ArrayList<>();
+        for (Shift shift : shifts) {
+            if (shift.getShiftDate().isAfter(LocalDateTime.now().minusDays(1)) && shift.getShiftDate().isBefore(LocalDateTime.now())){
+                list.add(shift);
+            }
+        }
+        model.put("repo", list);
         return "main";
     }
 
@@ -73,7 +80,6 @@ public class Controller {
                     columnList.add(s);
                 }
             }
-            Record record = new Record();
             ArrayList<Shift> shiftList = new ArrayList<>();
 
             if (columnList.size() > 0) {
@@ -87,7 +93,6 @@ public class Controller {
                     if (!type.isEmpty()) {
                         currentType = type;
                     }
-                    record.setName(text);
                     for (int i = shiftBeginPosition; i < columnList.size(); i++) {
                         String currentColumn = columnList.get(i);
                         if (!currentColumn.isEmpty()) {
@@ -108,19 +113,6 @@ public class Controller {
                 }
             }
         }
-
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Сегодня в смене:")
-                .append("\n");
-        for (Shift shift : shifts) {
-            if (shift.getShiftDate().isAfter(LocalDateTime.now().minusDays(1)) && shift.getShiftDate().isBefore(LocalDateTime.now())){
-                stringBuilder.append(shift.getEmployee().getName())
-                        .append(" ")
-                        .append(shift.getDescription())
-                        .append("\n");
-            }
-        }
-        System.out.println(stringBuilder);
 
         for (Shift shift : shifts) {
             shiftRepo.save(shift);

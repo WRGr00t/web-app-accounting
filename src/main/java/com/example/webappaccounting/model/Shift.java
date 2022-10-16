@@ -5,7 +5,13 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "shifts")
+@Table(name = "shifts",
+        uniqueConstraints =
+                {
+                        @UniqueConstraint(columnNames = "shift_time"),
+                        @UniqueConstraint(columnNames = "description"),
+                        @UniqueConstraint(columnNames = "employee")
+                })
 public class Shift implements Comparable<Shift>{
 
     @Id
@@ -17,7 +23,7 @@ public class Shift implements Comparable<Shift>{
     @Column(columnDefinition = "VARCHAR(255)", nullable = false)
     private String description;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "employee_id")
     private Employee employee;
 

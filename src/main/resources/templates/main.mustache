@@ -1,12 +1,13 @@
-<html>
+<!DOCTYPE html>
+<head>
+    <meta http-equiv='content-type' value='text/html;charset=windows-1251'>
+    <title>Today in shift</title>
+</head>
 <body>
-<div>Список смен</div>
-    {{shifts}}
+<div>Сегодня на смене:</div>
+    {{#repo}}
         <div>
-            {{shift.name}}
-            {{shift.date}}
-            {{shift.description}}
+            <b>{{employee.name}}</b> <i>{{description}}</i><br>
         </div>
-    {{/shifts}}
+    {{/repo}}
 </body>
-</html>
