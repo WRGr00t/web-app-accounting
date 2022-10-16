@@ -4,13 +4,7 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "employees",
-        uniqueConstraints =
-                {
-                        @UniqueConstraint(columnNames = "name"),
-                        @UniqueConstraint(columnNames = "shift_type")
-                }
-)
+@Table(name = "employees")
 public class Employee implements Comparable<Employee> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

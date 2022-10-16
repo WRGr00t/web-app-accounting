@@ -5,13 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "shifts",
-        uniqueConstraints =
-                {
-                        @UniqueConstraint(columnNames = "shift_time"),
-                        @UniqueConstraint(columnNames = "description"),
-                        @UniqueConstraint(columnNames = "employee")
-                })
+@Table(name = "shifts")
 public class Shift implements Comparable<Shift>{
 
     @Id

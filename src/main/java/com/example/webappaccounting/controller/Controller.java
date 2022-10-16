@@ -1,6 +1,5 @@
 package com.example.webappaccounting.controller;
 
-import com.example.webappaccounting.Record;
 import com.example.webappaccounting.model.Employee;
 import com.example.webappaccounting.model.Shift;
 import com.example.webappaccounting.repository.EmployeeRepo;
@@ -12,6 +11,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -26,25 +26,50 @@ public class Controller {
 
     @GetMapping("/greeting")
     public String greeting(@RequestParam(name="name", required=false, defaultValue="World") String name, Map<String, Object> model) throws Exception {
-        String path = "src/main/java/com/example/webappaccounting/graf.csv";
-        Set<Shift> shifts = ParseRecordCsv(path);
-
-        for (Shift shift : shifts) {
-            System.out.println(shift.toString());
+        Iterable<Shift> shiftIterable = shiftRepo.findAll();
+        if (!shiftIterable.iterator().hasNext()) {
+            String path = "src/main/java/com/example/webappaccounting/graf.csv";
+            ParseRecordCsv(path);
         }
-        model.put("name", shifts.size());
+        model.put("name", shiftIterable.iterator());
         return "greeting";
     }
     @GetMapping("/")
-    public String main(Map<String, Object> model) throws IOException {
-        //Iterable<Shift> shifts = shiftRepo.findAll();
-        //model.put("shifts", shifts);
-        String path = "src/main/java/com/example/webappaccounting/graf.csv";
-        Set<Shift> shifts = ParseRecordCsv(path);
+    public String main(@RequestParam(name="date", required=false, defaultValue = "today") String date, Map<String, Object> model) throws IOException {
+        Iterable<Shift> shiftIterable = shiftRepo.findAll();
+        //String path = "src/main/java/com/example/webappaccounting/graf.csv";
+        //Set<Shift> shifts = ParseRecordCsv(path);
         ArrayList<Shift> list = new ArrayList<>();
-        for (Shift shift : shifts) {
+        /*for (Shift shift : shifts) {
             if (shift.getShiftDate().isAfter(LocalDateTime.now().minusDays(1)) && shift.getShiftDate().isBefore(LocalDateTime.now())){
                 list.add(shift);
+            }
+        }*/
+
+        if (!shiftIterable.iterator().hasNext()) {
+            String path = "src/main/java/com/example/webappaccounting/graf.csv";
+            ParseRecordCsv(path);
+        }
+        LocalDateTime requestDate = LocalDateTime.now();
+
+        shiftIterable = shiftRepo.findAll();
+        if (date.equalsIgnoreCase("today")) {
+            date = String.valueOf(LocalDate.now());
+            System.out.println(date);
+        }
+            try {
+                String[] strings = date.split("-");
+                requestDate = LocalDateTime.of(
+                        Integer.parseInt(strings[0]),
+                        Integer.parseInt(strings[1]),
+                        Integer.parseInt(strings[2]), 0, 0, 0);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        for (Shift s : shiftIterable) {
+            if (s.getShiftDate().isAfter(requestDate.minusMinutes(1)) &&
+                    s.getShiftDate().isBefore(requestDate.plusMinutes(1))){
+                list.add(s);
             }
         }
         model.put("repo", list);
@@ -115,8 +140,15 @@ public class Controller {
         }
 
         for (Shift shift : shifts) {
-            shiftRepo.save(shift);
+            if (shiftRepo.findAllByShiftDateAndDescriptionAndEmployeeId(
+                    shift.getShiftDate(),
+                    shift.getDescription(),
+                    shift.getEmployee().getId())
+                    .isEmpty()) {
+                shiftRepo.save(shift);
+            }
         }
+
         for (Employee employee : employees) {
             employeeRepo.save(employee);
         }

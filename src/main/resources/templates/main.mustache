@@ -4,10 +4,10 @@
     <title>Today in shift</title>
 </head>
 <body>
-<div>Сегодня на смене:</div>
+<div>на смене:</div>
     {{#repo}}
         <div>
-            <b>{{employee.name}}</b> <i>{{description}}</i><br>
+            <b>{{employee.name}}</b> <i>{{description}}</i> - {{shiftDate}}<br>
         </div>
     {{/repo}}
 </body>
