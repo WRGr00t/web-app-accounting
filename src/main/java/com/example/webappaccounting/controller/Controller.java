@@ -1,8 +1,6 @@
 package com.example.webappaccounting.controller;
 
-import com.example.webappaccounting.model.Employee;
 import com.example.webappaccounting.model.Shift;
-import com.example.webappaccounting.repository.EmployeeRepo;
 import com.example.webappaccounting.repository.ShiftRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,8 +19,6 @@ import java.util.regex.Pattern;
 public class Controller {
     @Autowired
     private ShiftRepo shiftRepo;
-    @Autowired
-    private EmployeeRepo employeeRepo;
 
     @GetMapping("/greeting")
     public String greeting(@RequestParam(name="name", required=false, defaultValue="World") String name, Map<String, Object> model) throws Exception {
@@ -37,14 +33,7 @@ public class Controller {
     @GetMapping("/")
     public String main(@RequestParam(name="date", required=false, defaultValue = "today") String date, Map<String, Object> model) throws IOException {
         Iterable<Shift> shiftIterable = shiftRepo.findAll();
-        //String path = "src/main/java/com/example/webappaccounting/graf.csv";
-        //Set<Shift> shifts = ParseRecordCsv(path);
         ArrayList<Shift> list = new ArrayList<>();
-        /*for (Shift shift : shifts) {
-            if (shift.getShiftDate().isAfter(LocalDateTime.now().minusDays(1)) && shift.getShiftDate().isBefore(LocalDateTime.now())){
-                list.add(shift);
-            }
-        }*/
 
         if (!shiftIterable.iterator().hasNext()) {
             String path = "src/main/java/com/example/webappaccounting/graf.csv";
@@ -55,7 +44,6 @@ public class Controller {
         shiftIterable = shiftRepo.findAll();
         if (date.equalsIgnoreCase("today")) {
             date = String.valueOf(LocalDate.now());
-            System.out.println(date);
         }
             try {
                 String[] strings = date.split("-");
@@ -68,7 +56,8 @@ public class Controller {
             }
         for (Shift s : shiftIterable) {
             if (s.getShiftDate().isAfter(requestDate.minusMinutes(1)) &&
-                    s.getShiftDate().isBefore(requestDate.plusMinutes(1))){
+                    s.getShiftDate().isBefore(requestDate.plusMinutes(1)) &&
+                    isShiftTime(s.getDescription())) {
                 list.add(s);
             }
         }
@@ -81,13 +70,10 @@ public class Controller {
         List<String> fileLines = Files.readAllLines(Paths.get(filePath), StandardCharsets.UTF_8);
         String currentMonth = "";
         String currentYear = "";
-        String currentType = "";
-        TreeSet<Employee> employees = new TreeSet<>();
         TreeSet<Shift> shifts = new TreeSet<>();
 
         for (String fileLine : fileLines) {
             if (isNewMonth(fileLine)) {
-                System.out.println("yes - " + fileLine);
                 int monthPosition = 3;
                 int yearPosition = 4;
                 String[] words = fileLine.split(" ");
@@ -110,14 +96,9 @@ public class Controller {
             if (columnList.size() > 0) {
                 int namePosition = 0;
                 int shiftBeginPosition = 3;
-                int typePosition = 1;
                 String text = columnList.get(namePosition);
 
                 if (IsName(text)) {
-                    String type = columnList.get(typePosition);
-                    if (!type.isEmpty()) {
-                        currentType = type;
-                    }
                     for (int i = shiftBeginPosition; i < columnList.size(); i++) {
                         String currentColumn = columnList.get(i);
                         if (!currentColumn.isEmpty()) {
@@ -126,13 +107,11 @@ public class Controller {
                                     getNumberOfMonth(currentMonth),
                                     (i - shiftBeginPosition + 1),
                                     0, 0, 0);
-                            Employee employee = new Employee(text, currentType);
                             Shift shift = new Shift(dateShift,
                                     currentColumn,
-                                    employee);
+                                    text);
                             shiftList.add(shift);
                             shifts.add(shift);
-                            employees.add(employee);
                         }
                     }
                 }
@@ -140,18 +119,15 @@ public class Controller {
         }
 
         for (Shift shift : shifts) {
-            if (shiftRepo.findAllByShiftDateAndDescriptionAndEmployeeId(
+            if (shiftRepo.findAllByShiftDateAndDescriptionAndName(
                     shift.getShiftDate(),
                     shift.getDescription(),
-                    shift.getEmployee().getId())
+                    shift.getName())
                     .isEmpty()) {
                 shiftRepo.save(shift);
             }
         }
 
-        for (Employee employee : employees) {
-            employeeRepo.save(employee);
-        }
         return shifts;
     }
 
@@ -221,5 +197,9 @@ public class Controller {
         String substring = "ГРАФИК РАБОТЫ НА";
         substring = substring.toLowerCase();
         return string.toLowerCase().contains(substring);
+    }
+
+    private boolean isShiftTime(String description) {
+        return Pattern.matches("^\\d{1,2}\\-\\d{1,2}$", description);
     }
 }

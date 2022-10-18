@@ -17,9 +17,8 @@ public class Shift implements Comparable<Shift>{
     @Column(columnDefinition = "VARCHAR(255)", nullable = false)
     private String description;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "employee_id")
-    private Employee employee;
+    @Column(name = "employee_name", columnDefinition = "VARCHAR(255)", nullable = false)
+    private String name;
 
     public Shift() {
     }
@@ -29,10 +28,10 @@ public class Shift implements Comparable<Shift>{
         this.description = description;
     }
 
-    public Shift(LocalDateTime shiftDate, String description, Employee employee) {
+    public Shift(LocalDateTime shiftDate, String description, String name) {
         this.shiftDate = shiftDate;
         this.description = description;
-        this.employee = employee;
+        this.name = name;
     }
 
     public LocalDateTime getShiftDate() {
@@ -59,12 +58,12 @@ public class Shift implements Comparable<Shift>{
         this.id = id;
     }
 
-    public Employee getEmployee() {
-        return employee;
+    public String getName() {
+        return name;
     }
 
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
@@ -72,7 +71,7 @@ public class Shift implements Comparable<Shift>{
         return "Shift{" +
                 "date=" + shiftDate +
                 ", interval = '" + description + '\'' +
-                ", employee = '" + employee + '\'' +
+                ", employee = '" + name + '\'' +
                 '}';
     }
 
@@ -83,7 +82,7 @@ public class Shift implements Comparable<Shift>{
         Shift shift = (Shift) obj;
         return Objects.equals(shiftDate, shift.shiftDate) &&
                 Objects.equals(description, shift.description) &&
-                Objects.equals(employee, shift.employee);
+                Objects.equals(name, shift.name);
     }
 
     @Override
@@ -92,7 +91,7 @@ public class Shift implements Comparable<Shift>{
         if (result == 0) {
             result = this.description.compareTo(o.description);
             if (result == 0) {
-                result = this.employee.compareTo(o.employee);
+                result = this.name.compareTo(o.name);
             }
         }
         return result;
