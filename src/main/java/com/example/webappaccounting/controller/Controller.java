@@ -20,8 +20,17 @@ public class Controller {
     @Autowired
     private ShiftRepo shiftRepo;
 
+    @GetMapping("/")
+    public String home(Map<String, Object> model){
+        LocalDate day = LocalDate.now();
+        model.put("today", day);
+        day = LocalDate.now().plusDays(1);
+        model.put("tomorrow", day);
+        return "home";
+    }
+
     @GetMapping("/greeting")
-    public String greeting(@RequestParam(name="name", required=false, defaultValue="World") String name, Map<String, Object> model) throws Exception {
+    public String greeting(Map<String, Object> model) throws Exception {
         Iterable<Shift> shiftIterable = shiftRepo.findAll();
         if (!shiftIterable.iterator().hasNext()) {
             String path = "src/main/java/com/example/webappaccounting/graf.csv";
@@ -30,8 +39,8 @@ public class Controller {
         model.put("name", shiftIterable.iterator());
         return "greeting";
     }
-    @GetMapping("/")
-    public String main(@RequestParam(name="date", required=false, defaultValue = "today") String date, Map<String, Object> model) throws IOException {
+    @GetMapping("/inshift")
+    public String main(@RequestParam(name="calendar", required=false) String date, Map<String, Object> model) throws IOException {
         Iterable<Shift> shiftIterable = shiftRepo.findAll();
         ArrayList<Shift> list = new ArrayList<>();
 
@@ -42,9 +51,9 @@ public class Controller {
         LocalDateTime requestDate = LocalDateTime.now();
 
         shiftIterable = shiftRepo.findAll();
-        if (date.equalsIgnoreCase("today")) {
+        /*if (date.equalsIgnoreCase("today")) {
             date = String.valueOf(LocalDate.now());
-        }
+        }*/
             try {
                 String[] strings = date.split("-");
                 requestDate = LocalDateTime.of(
@@ -61,8 +70,12 @@ public class Controller {
                 list.add(s);
             }
         }
+        LocalDate localDate = requestDate.toLocalDate();
+        LocalDate today = LocalDate.now();
+        model.put("today", today);
+        model.put("date", localDate);
         model.put("repo", list);
-        return "main";
+        return "inshift";
     }
 
     private Set<Shift> ParseRecordCsv(String filePath) throws IOException {

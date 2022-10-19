@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <title>{{date}}на смене:</title>
+</head>
+<body>
+<a href="/">На главную</a>
+<form>
+    <p>
+        <input type="date" name="calendar" value={{today}}
+               max="2022-12-31" min="2022-01-01">
+        <input type="submit" value="Выбрать">
+    </p>
+</form>
+<div>{{date}} на смене:</div><br>
+    {{#repo}}
+        <b>{{name}}</b>        <i>{{description}}</i><br>
+    {{/repo}}
+</body>
