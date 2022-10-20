@@ -20,6 +20,9 @@ public class Shift implements Comparable<Shift>{
     @Column(name = "employee_name", columnDefinition = "VARCHAR(255)", nullable = false)
     private String name;
 
+    @Column(name = "shift_type", columnDefinition = "VARCHAR(255)", nullable = false)
+    private String shiftType;
+
     public Shift() {
     }
 
@@ -32,6 +35,13 @@ public class Shift implements Comparable<Shift>{
         this.shiftDate = shiftDate;
         this.description = description;
         this.name = name;
+    }
+
+    public Shift(LocalDateTime shiftDate, String description, String name, String shiftType) {
+        this.shiftDate = shiftDate;
+        this.description = description;
+        this.name = name;
+        this.shiftType = shiftType;
     }
 
     public LocalDateTime getShiftDate() {
@@ -66,12 +76,21 @@ public class Shift implements Comparable<Shift>{
         this.name = name;
     }
 
+    public String getShiftType() {
+        return shiftType;
+    }
+
+    public void setShiftType(String shiftType) {
+        this.shiftType = shiftType;
+    }
+
     @Override
     public String toString() {
         return "Shift{" +
                 "date=" + shiftDate +
                 ", interval = '" + description + '\'' +
                 ", employee = '" + name + '\'' +
+                ", shiftType = '" + shiftType + '\'' +
                 '}';
     }
 

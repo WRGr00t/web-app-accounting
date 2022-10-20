@@ -51,9 +51,9 @@ public class Controller {
         LocalDateTime requestDate = LocalDateTime.now();
 
         shiftIterable = shiftRepo.findAll();
-        /*if (date.equalsIgnoreCase("today")) {
+        if (date == null) {
             date = String.valueOf(LocalDate.now());
-        }*/
+        }
             try {
                 String[] strings = date.split("-");
                 requestDate = LocalDateTime.of(
@@ -83,6 +83,7 @@ public class Controller {
         List<String> fileLines = Files.readAllLines(Paths.get(filePath), StandardCharsets.UTF_8);
         String currentMonth = "";
         String currentYear = "";
+        String currentType = "";
         TreeSet<Shift> shifts = new TreeSet<>();
 
         for (String fileLine : fileLines) {
@@ -109,9 +110,14 @@ public class Controller {
             if (columnList.size() > 0) {
                 int namePosition = 0;
                 int shiftBeginPosition = 3;
+                int typePosition = 1;
                 String text = columnList.get(namePosition);
 
                 if (IsName(text)) {
+                    String type = columnList.get(typePosition);
+                    if (!type.isEmpty()) {
+                        currentType = type;
+                    }
                     for (int i = shiftBeginPosition; i < columnList.size(); i++) {
                         String currentColumn = columnList.get(i);
                         if (!currentColumn.isEmpty()) {
