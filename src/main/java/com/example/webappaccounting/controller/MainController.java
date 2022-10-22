@@ -16,7 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @org.springframework.stereotype.Controller
-public class Controller {
+public class MainController {
     @Autowired
     private ShiftRepo shiftRepo;
 
@@ -43,6 +43,7 @@ public class Controller {
     public String main(@RequestParam(name="calendar", required=false) String date, Map<String, Object> model) throws IOException {
         Iterable<Shift> shiftIterable = shiftRepo.findAll();
         ArrayList<Shift> list = new ArrayList<>();
+        ArrayList<Shift> nightShift = new ArrayList<>();
 
         if (!shiftIterable.iterator().hasNext()) {
             String path = "src/main/java/com/example/webappaccounting/graf.csv";
@@ -67,14 +68,23 @@ public class Controller {
             if (s.getShiftDate().isAfter(requestDate.minusMinutes(1)) &&
                     s.getShiftDate().isBefore(requestDate.plusMinutes(1)) &&
                     isShiftTime(s.getDescription())) {
-                list.add(s);
+                if (isNightShift(s)) {
+                    nightShift.add(s);
+                } else {
+                    list.add(s);
+                }
             }
         }
         LocalDate localDate = requestDate.toLocalDate();
+        LocalDate startYear = LocalDate.of(LocalDate.now().getYear(),1, 1);
+        LocalDate endYear = LocalDate.of(LocalDate.now().getYear(),12, 31);
         LocalDate today = LocalDate.now();
+        model.put("startYear", startYear);
+        model.put("endYear", endYear);
         model.put("today", today);
         model.put("date", localDate);
         model.put("repo", list);
+        model.put("night", nightShift);
         return "inshift";
     }
 
@@ -230,5 +240,11 @@ public class Controller {
 
     private boolean isShiftTime(String description) {
         return Pattern.matches("^\\d{1,2}\\-\\d{1,2}$", description);
+    }
+
+    private boolean isNightShift (Shift shift) {
+        String description = shift.getDescription();
+        String[] hours = description.split("-");
+        return Integer.parseInt(hours[0]) > Integer.parseInt(hours[1]);
     }
 }
