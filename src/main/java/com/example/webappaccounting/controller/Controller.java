@@ -128,24 +128,34 @@ public class Controller {
                                     0, 0, 0);
                             Shift shift = new Shift(dateShift,
                                     currentColumn,
-                                    text);
-                            shiftList.add(shift);
-                            shifts.add(shift);
+                                    text,
+                                    currentType);
+                            //shiftList.add(shift);
+                            //shifts.add(shift);
+                            if (shiftRepo.findAllByShiftDateAndDescriptionAndNameAndShiftType(
+                                    shift.getShiftDate(),
+                                            shift.getDescription(),
+                                            shift.getName(),
+                                            shift.getShiftType())
+                                    .isEmpty()){
+                                shiftRepo.save(shift);
+                            }
                         }
                     }
                 }
             }
         }
 
-        for (Shift shift : shifts) {
+        /*for (Shift shift : shifts) {
             if (shiftRepo.findAllByShiftDateAndDescriptionAndName(
                     shift.getShiftDate(),
                     shift.getDescription(),
                     shift.getName())
                     .isEmpty()) {
+                System.out.println(shift);
                 shiftRepo.save(shift);
             }
-        }
+        }*/
 
         return shifts;
     }

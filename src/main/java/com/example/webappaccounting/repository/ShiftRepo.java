@@ -10,4 +10,10 @@ public interface ShiftRepo extends CrudRepository<Shift, Long> {
     Optional<Shift> findAllByShiftDate(LocalDateTime shiftDate);
 
     Optional<Shift> findAllByShiftDateAndDescriptionAndName(LocalDateTime shiftDate, String description, String name);
+
+    Optional<Shift> findAllByShiftDateAndDescriptionAndNameAndShiftType(
+            LocalDateTime shiftDate,
+            String description,
+            String name,
+            String shiftType);
 }
