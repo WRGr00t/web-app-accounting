@@ -83,8 +83,8 @@ public class MainController {
         model.put("endYear", endYear);
         model.put("today", today);
         model.put("date", localDate);
-        model.put("repo", list);
-        model.put("night", nightShift);
+        model.put("repos", list);
+        model.put("nights", nightShift);
         return "inshift";
     }
 
