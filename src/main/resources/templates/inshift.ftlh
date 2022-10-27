@@ -13,20 +13,34 @@
         <input type="hidden" name="_csrf" value="${_csrf.token}"/>
     </p>
 </form>
-<div>${date} на смене:</div><br>
+<table border="1">
+<caption>${date} на смене</caption>
+    <tr>
+        <th>Сотрудник</th>
+        <th>Время смены</th>
+        <th>Тип смены</th>
+   </tr>
+   <tr>
+        <td colspan="3">Дневная смена</td>
+   </tr>
 <#list repos as repo>
-<div>
-    <b>${repo.name}</b> <i>${repo.description}</i> ${repo.shiftType}<br>
-</div>
+    <tr>
+        <td><b>${repo.name}</b></td>
+        <td><i>${repo.description}</i></td>
+        <td>${repo.shiftType}</td>
+    </tr>
 </#list>
-<div><br>
-    В ночь: <br><br>
-</div>
+    <tr>
+        <td colspan="3">В ночь:</td>
+    </tr>
 <#list nights as night>
-<div>
-    <b>${night.name}</b> <i>${night.description}</i> ${night.shiftType}<br>
-</div>
+    <tr>
+        <td><b>${night.name}</b></td>
+        <td><i>${night.description}</i></td>
+        <td>${night.shiftType}</td>
+    </tr>
 <#else>
 Not found shift
 </#list>
+</table>
 </@c.page>

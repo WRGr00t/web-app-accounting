@@ -28,6 +28,10 @@ public class RegController {
             model.put("message", "User exists(");
             return "registration";
         }
+        if (user.getUsername().isEmpty() || user.getPassword().isEmpty()) {
+            model.put("message", "All inputs must be not empty");
+            return "registration";
+        }
         user.setActive(true);
         user.setRoles(Collections.singleton(Role.USER));
         userRepo.save(user);

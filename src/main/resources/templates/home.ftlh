@@ -2,11 +2,14 @@
 <#import "parts/login.ftlh" as l>
 
 <@c.page>
+<div>
+    <@l.logout />
+</div>
     <div>
         Hello, user!
     </div>
     <div>
+        <span><a href="/user">User list</a></span><br>
         <a href="/inshift?date=${today}">Сегодня в смене</a>
-        <a href="/inshift?date=${tomorrow}">>>></a>
     </div>
 </@c.page>

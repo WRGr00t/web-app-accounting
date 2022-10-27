@@ -24,8 +24,6 @@ public class MainController {
     public String home(Map<String, Object> model){
         LocalDate day = LocalDate.now();
         model.put("today", day);
-        day = LocalDate.now().plusDays(1);
-        model.put("tomorrow", day);
         return "home";
     }
 
@@ -40,7 +38,8 @@ public class MainController {
         return "greeting";
     }
     @GetMapping("/inshift")
-    public String main(@RequestParam(name="calendar", required=false) String date, Map<String, Object> model) throws IOException {
+    public String main(@RequestParam(name="calendar", required=false) String date,
+                       Map<String, Object> model) throws IOException {
         Iterable<Shift> shiftIterable = shiftRepo.findAll();
         ArrayList<Shift> list = new ArrayList<>();
         ArrayList<Shift> nightShift = new ArrayList<>();
