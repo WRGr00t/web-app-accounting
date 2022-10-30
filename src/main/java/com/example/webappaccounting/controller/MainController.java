@@ -3,6 +3,7 @@ package com.example.webappaccounting.controller;
 import com.example.webappaccounting.model.Shift;
 import com.example.webappaccounting.repository.ShiftRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.io.IOException;
@@ -20,6 +21,9 @@ public class MainController {
     @Autowired
     private ShiftRepo shiftRepo;
 
+    @Value("${upload.path}")
+    private String UPLOAD_DIR;
+
     @GetMapping("/")
     public String home(Map<String, Object> model){
         LocalDate day = LocalDate.now();
@@ -31,7 +35,8 @@ public class MainController {
     public String greeting(Map<String, Object> model) throws Exception {
         Iterable<Shift> shiftIterable = shiftRepo.findAll();
         if (!shiftIterable.iterator().hasNext()) {
-            String path = "src/main/java/com/example/webappaccounting/graf.csv";
+            //String path = "src/main/java/com/example/webappaccounting/graf.csv";
+            String path = UPLOAD_DIR;
             ParseRecordCsv(path);
         }
         model.put("name", shiftIterable.iterator());
@@ -45,7 +50,8 @@ public class MainController {
         ArrayList<Shift> nightShift = new ArrayList<>();
 
         if (!shiftIterable.iterator().hasNext()) {
-            String path = "src/main/java/com/example/webappaccounting/graf.csv";
+            //String path = "src/main/java/com/example/webappaccounting/graf.csv";
+            String path = UPLOAD_DIR;
             ParseRecordCsv(path);
         }
         LocalDateTime requestDate = LocalDateTime.now();

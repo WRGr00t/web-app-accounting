@@ -1,5 +1,6 @@
 package com.example.webappaccounting.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +15,9 @@ import java.util.*;
 
 @Controller
 public class UploadController {
-    public static String UPLOAD_DIR = "src/main/java/com/example/webappaccounting/upload";
+    //public static String UPLOAD_DIR = "src/main/java/com/example/webappaccounting/upload";
+    @Value("${upload.path}")
+    private String UPLOAD_DIR;
 
     @GetMapping("/upload")
     public String displayUploadForm(Map<String, Object> model) throws IOException {
