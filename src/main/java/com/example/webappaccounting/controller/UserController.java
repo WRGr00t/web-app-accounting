@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/user")
-//@PreAuthorize("hasAuthority('ADMIN')")
+@PreAuthorize("hasAuthority('ADMIN')")
 public class UserController {
     @Autowired
     private UserRepo userRepo;
@@ -36,26 +36,14 @@ public class UserController {
     }
 
     @PostMapping
-    public String userSave(
-            @RequestParam String username,
-            @RequestParam Map<String, String> form,
-            @RequestParam("userId") User user
-            ) {
+    public String userSave(@RequestParam String username, @RequestParam(name="roles[]", required = false) String[] roles,  @RequestParam("userId") User user){
         user.setUsername(username);
-
-        Set<String> roles = Arrays.stream(Role.values())
-                .map(Role::name)
-                .collect(Collectors.toSet());
-
         user.getRoles().clear();
 
-        for (String key : form.keySet()) {
-            if (roles.contains(key)) {
-                user.getRoles().add(Role.valueOf(key));
-            }
+        if(roles!=null) {
+            Arrays.stream(roles).forEach(r -> user.getRoles().add(Role.valueOf(r)));
         }
         userRepo.save(user);
-
         return "redirect:/user";
     }
 }

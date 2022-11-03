@@ -2,14 +2,8 @@
 <#import "parts/login.ftlh" as l>
 
 <@c.page>
-<div>
-    <@l.logout />
-</div>
+    <p class="h4">Привет, гость!</p>
     <div>
-        Hello, user!
-    </div>
-    <div>
-        <span><a href="/user">User list</a></span><br>
-        <a href="/inshift?date=${today}">Сегодня в смене</a>
+        <span>Это страница сервиса уточнения времени работы сотрудников на сменах, анализа наполненности смены и учета нагрузки сотрудников</span>
     </div>
 </@c.page>
