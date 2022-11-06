@@ -2,9 +2,6 @@
 <#import "parts/login.ftlh" as l>
 
 <@c.page>
-<div>
-    <@l.logout />
-</div>
 User editor
 <form action="/user" method="post">
     <input type="text" name="username" value="${user.username}">

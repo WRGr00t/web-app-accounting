@@ -1,4 +1,5 @@
 <#include "security.ftlh">
+<#import "login.ftlh" as l>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <a class="navbar-brand" href="/">
   <img src="static/img/icon.svg" width="30" height="30" class="d-inline-block align-top" alt="">На смене</a>
@@ -20,10 +21,9 @@
       </li>
       </#if>
     </ul>
-    <ul class="nav navbar-nav ml-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="/login"><span class="fas fa-sign-in-alt"></span> Login</a>
-      </li>
-    </ul>
+    <div class="navbar-text mr-3">
+        ${name}
+    </div>
+    <@l.logout />
   </div>
 </nav>

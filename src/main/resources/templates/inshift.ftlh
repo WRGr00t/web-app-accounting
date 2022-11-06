@@ -1,17 +1,19 @@
 <#import "parts/common.ftlh" as c>
 <@c.page>
-<div>
-    <@l.logout />
+<div class="container">
+    <form>
+        <div class="form-group">
+            <div class="col-sm-6">
+                <div class='input-group date'>
+                    <input class="form-control" type="date" name="calendar" value=${date}
+                           max="endYear" min="startYear">
+                    <button class="btn btn-primary" type="submit">Выбрать</button>
+                    <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
-<a href="/">На главную</a>
-<form>
-    <p>
-        <input type="date" name="calendar" value=${date}
-               max="endYear" min="startYear">
-        <input type="submit" value="Выбрать">
-        <input type="hidden" name="_csrf" value="${_csrf.token}"/>
-    </p>
-</form>
 <table class="table table-striped">
   <thead>
         <tr>

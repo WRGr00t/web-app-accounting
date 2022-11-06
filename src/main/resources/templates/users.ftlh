@@ -2,9 +2,6 @@
 <#import "parts/login.ftlh" as l>
 <@c.page>
 <div>
-    <@l.logout />
-</div>
-<div>
 List of users
 </div>
 <table border="1">
