@@ -26,7 +26,7 @@ public class UserService implements UserDetailsService {
     public boolean addUser(User user) {
         User userFromDB = userRepo.findByUsername(user.getUsername());
 
-        if (userFromDB !=null) {
+        if (userFromDB !=null || user.getUsername().isEmpty() || user.getPassword().isEmpty()) {
             return false;
         }
         user.setActive(true);
