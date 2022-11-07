@@ -1,20 +1,18 @@
 <#import "parts/common.ftlh" as c>
 <#import "parts/login.ftlh" as l>
 <@c.page>
-<div>
-List of users
-</div>
-<table border="1">
+<h4>Список пользователей</h4>
+<table class="table table-striped">
     <thead>
         <tr>
-            <th>Name</th>
-            <th>Role</th>
-            <th></th>
-        </tr>
-    </thead>
+            <th scope="col">Пользователь</th>
+            <th scope="col">Роли</th>
+            <th scope="col">Операции</th>
+       </tr>
+   </thead>
     <tbody>
         <#list users as user>
-        <tr>
+        <tr scope="row">
             <td>${user.username}</td>
             <td><#list user.roles as role>${role}<#sep>, </#list></td>
             <td><a href="/user/${user.id}">edit</a></td>
