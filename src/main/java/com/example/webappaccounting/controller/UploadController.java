@@ -15,9 +15,9 @@ import java.util.*;
 
 @Controller
 public class UploadController {
-    //public static String UPLOAD_DIR = "src/main/java/com/example/webappaccounting/upload";
-    @Value("${upload.path}")
-    private String UPLOAD_DIR;
+    public static String UPLOAD_DIR = "src/main/java/com/example/webappaccounting/upload";
+    //@Value("${upload.path}")
+    //private String UPLOAD_DIR;
 
     @GetMapping("/upload")
     public String displayUploadForm(Map<String, Object> model) throws IOException {
@@ -29,7 +29,7 @@ public class UploadController {
         HashSet<String> filesInDir = (HashSet<String>) listFilesUsingDirectoryStream(UPLOAD_DIR);
 
         model.put("msg", filesInDir);
-        return "index";
+        return "upload";
     }
 
     @PostMapping("/upload")
@@ -39,7 +39,7 @@ public class UploadController {
         fileNames.append(file.getOriginalFilename());
         System.out.println(fileNames);
         Files.write(fileNameAndPath, file.getBytes());
-        return "index";
+        return "upload";
     }
 
     private Set<String> listFilesUsingDirectoryStream(String dir) throws IOException {

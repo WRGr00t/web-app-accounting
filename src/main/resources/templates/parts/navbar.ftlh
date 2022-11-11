@@ -29,6 +29,11 @@
     <div class="navbar-text mr-3">
         ${name}
     </div>
+    <#if !known>
+    <form action="/login" method="post">
+      <button class="btn btn-primary" type="submit">Вoйти</button>
+    </form>
+    </#if>
     <#if known>
         <@l.logout />
     </#if>
