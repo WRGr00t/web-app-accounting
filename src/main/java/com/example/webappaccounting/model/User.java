@@ -2,10 +2,10 @@ package com.example.webappaccounting.model;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Set;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "usr")
@@ -15,8 +15,9 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @NotBlank(message = "Username cannot be empty")
     private String username;
-
+    @NotBlank(message = "Password cannot be empty")
     private String password;
 
     private boolean active;

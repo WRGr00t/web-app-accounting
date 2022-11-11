@@ -51,7 +51,7 @@ public class UserController {
         return "profile";
     }
 
-    @PostMapping("prifile")
+    @PostMapping("profile")
     public String updateProfile(@AuthenticationPrincipal User user,
                                 @RequestParam String password) {
         userService.updateProfile(user, password);
