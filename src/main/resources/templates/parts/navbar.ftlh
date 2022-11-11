@@ -12,6 +12,11 @@
       <li class="nav-item">
         <a class="nav-link" href="/inshift">Список смены</a>
       </li>
+      <#if user??>
+         <li class="nav-item">
+            <a class="nav-link" href="/user/profile">Профиль</a>
+         </li>
+      </#if>
       <#if isAdmin>
       <li class="nav-item">
         <a class="nav-link" href="/user">Пользователи</a>
