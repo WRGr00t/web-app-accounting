@@ -37,7 +37,6 @@ public class UploadController {
         StringBuilder fileNames = new StringBuilder();
         Path fileNameAndPath = Paths.get(UPLOAD_DIR, file.getOriginalFilename());
         fileNames.append(file.getOriginalFilename());
-        System.out.println(fileNames);
         Files.write(fileNameAndPath, file.getBytes());
         return "upload";
     }
