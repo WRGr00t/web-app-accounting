@@ -36,4 +36,9 @@ public interface ShiftRepo extends CrudRepository<Shift, Long> {
             String name,
             LocalDateTime dayStart,
             LocalDateTime dayEnd);
+
+    List<Shift> findAllByShiftDateBetween(
+            LocalDateTime dayStart,
+            LocalDateTime dayEnd);
+
 }
