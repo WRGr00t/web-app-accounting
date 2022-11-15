@@ -12,5 +12,9 @@
     <div class="col-auto">
       <button type="submit" class="btn btn-primary mb-3">Загрузить</button>
     </div>
+</form>
+    <div>
+        ${msg?ifExists}
+    </div>
 
 </@c.page>
