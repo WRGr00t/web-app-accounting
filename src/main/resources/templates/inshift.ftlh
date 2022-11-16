@@ -6,7 +6,7 @@
             <div class="col-sm-6">
                 <div class='input-group date'>
                     <input class="form-control" type="date" name="calendar" value=${date}
-                           max="endYear" min="startYear">
+                           max=${endYear} min=${startYear}>
                     <button class="btn btn-primary" type="submit">Выбрать</button>
                     <input type="hidden" name="_csrf" value="${_csrf.token}"/>
                 </div>

@@ -64,4 +64,21 @@ public class MainController {
 
         return "inshift";
     }
+
+    @GetMapping("/inmonth")
+    public String month(@RequestParam(name="month", required=false) String month,
+                       Map<String, Object> model) {
+
+        LocalDate localDate = LocalDate.now();
+        LocalDate startYear = LocalDate.of(LocalDate.now().getYear(),1, 1);
+        LocalDate endYear = LocalDate.of(LocalDate.now().getYear(),12, 31);
+        LocalDate today = LocalDate.now();
+        String date = today.toString().substring(0, 7);
+        model.put("startYear", startYear);
+        model.put("endYear", endYear);
+        model.put("today", today);
+        model.put("date", date);
+        System.out.println(month);
+        return "month";
+    }
 }
