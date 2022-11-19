@@ -22,9 +22,9 @@ public class UploadController {
 
     @Autowired
     private ShiftRepo shiftRepo;
-    //public static String UPLOAD_DIR = "src/main/java/com/example/webappaccounting/upload";
-    @Value("${upload.path}")
-    private String UPLOAD_DIR;
+    public static String UPLOAD_DIR = "src/main/java/com/example/webappaccounting/upload";
+    /*@Value("${upload.path}")
+    private String UPLOAD_DIR;*/
 
     @GetMapping("/upload")
     public String displayUploadForm(Map<String, Object> model) throws IOException {
@@ -48,7 +48,7 @@ public class UploadController {
         return "upload";
     }*/
 
-    @PostMapping("/upload") // // новая аннотация с 4.3
+    @PostMapping("/upload")
     public String singleFileUpload(@RequestParam("file") MultipartFile file,
                                    RedirectAttributes redirectAttributes) {
 

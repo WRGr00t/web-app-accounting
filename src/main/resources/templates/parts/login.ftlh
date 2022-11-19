@@ -45,7 +45,7 @@
       </#if>
     <input type="hidden" name="_csrf" value="${_csrf.token}"/>
     <#if !isRegisterForm><a href="/registration">Add new user</a></#if>
-    <button class="btn btn-primary" type="submit"><#if isRegisterForm>Добавить<#else>Войти</#if></button>
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit"><#if isRegisterForm>Добавить<#else>Войти</#if></button>
 </form>
 </#macro>
 
@@ -53,6 +53,6 @@
 
 <form action="/logout" method="post">
     <input type="hidden" name="_csrf" value="${_csrf.token}"/>
-  <button class="btn btn-primary" type="submit">Выйти</button>
+  <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Выйти</button>
 </form>
 </#macro>

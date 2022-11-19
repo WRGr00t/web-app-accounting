@@ -34,7 +34,7 @@
     </div>
     <#if !known>
     <form action="/login" method="post">
-      <button class="btn btn-primary" type="submit">Вoйти</button>
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Вoйти</button>
     </form>
     </#if>
     <#if known>

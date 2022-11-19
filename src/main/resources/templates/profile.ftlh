@@ -17,7 +17,7 @@ ${message?ifExists}
     </div>
     <input type="hidden" name="_csrf" value="${_csrf.token}"/>
   </div>
-    <button class="btn btn-primary" type="submit">Сохранить</button>
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Сохранить</button>
   </div>
 </form>
 </@c.page>

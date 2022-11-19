@@ -6,6 +6,7 @@ import com.example.webappaccounting.service.ParseHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -58,9 +59,10 @@ public class MainController {
         model.put("repos", list);
         model.put("nights", nightShift);
         HashSet<String> names = (HashSet<String>) helper.getNameInMonth(11);
-        for (String name : names) {
+        /*for (String name : names) {
             System.out.println(name + " " + helper.getCountWorkingHoursByMonth(name, 11, 2022));
-        }
+        }*/
+        System.out.println("Луканин - " + helper.getCountWorkingHoursByMonth("Луканин А.",11, 2022));
 
         return "inshift";
     }
@@ -70,15 +72,11 @@ public class MainController {
                        Map<String, Object> model) {
 
         LocalDate localDate = LocalDate.now();
-        LocalDate startYear = LocalDate.of(LocalDate.now().getYear(),1, 1);
-        LocalDate endYear = LocalDate.of(LocalDate.now().getYear(),12, 31);
         LocalDate today = LocalDate.now();
         String date = today.toString().substring(0, 7);
-        model.put("startYear", startYear);
-        model.put("endYear", endYear);
-        model.put("today", today);
+        System.out.println(date);
         model.put("date", date);
-        System.out.println(month);
+
         return "month";
     }
 }

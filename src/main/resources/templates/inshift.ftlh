@@ -4,10 +4,10 @@
     <form>
         <div class="form-group">
             <div class="col-sm-6">
-                <div class='input-group date'>
+                <div class="input-group date">
                     <input class="form-control" type="date" name="calendar" value=${date}
                            max=${endYear} min=${startYear}>
-                    <button class="btn btn-primary" type="submit">Выбрать</button>
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Выбрать</button>
                     <input type="hidden" name="_csrf" value="${_csrf.token}"/>
                 </div>
             </div>
