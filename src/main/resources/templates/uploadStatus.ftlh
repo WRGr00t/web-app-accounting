@@ -4,5 +4,5 @@
     <div>
         ${message?ifExists}
     </div>
-
+<a href="/upload" class="btn btn-primary">Назад</a>
 </@c.page>

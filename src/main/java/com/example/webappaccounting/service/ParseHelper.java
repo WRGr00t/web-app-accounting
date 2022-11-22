@@ -4,6 +4,7 @@ import com.example.webappaccounting.model.Shift;
 import com.example.webappaccounting.repository.ShiftRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -11,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -238,14 +240,57 @@ public class ParseHelper {
         return count;
     }
 
+    public int getCountWorkingHoursInRange(String employeeName, LocalDate startRange, LocalDate endRange) {
+        LocalDateTime startTime = startRange.atStartOfDay();
+        LocalDateTime finishTime = endRange.atTime(23, 59, 59);
+        ArrayList<Shift> shiftsByName = (ArrayList<Shift>) shiftRepo.findAllByNameAndShiftDateBetween(employeeName, startTime, finishTime);
+        int count = 0;
+        for (Shift shift : shiftsByName) {
+            String desc = shift.getDescription();
+            if (isShiftTime(desc)) {
+                String[] times = desc.split("-");
+                int end = Integer.parseInt(times[1]);
+                int start = Integer.parseInt(times [0]);
+                if (start < end) {
+                    count = count + end - start;
+                } else {
+                    if (shift.getShiftDate().isAfter(finishTime.minusDays(1))) {
+                        count = count + 24 - start;
+                    } else {
+                        count = count + 24 - (start - end);
+                    }
+                }
+            }
+        }
+        return count;
+
+    }
+
     public Set<String> getNameInMonth(int monthNumber) {
-        HashSet<String> resultSet;
+        Set<String> resultSet;
         LocalDate init = LocalDate.of(LocalDate.now().getYear(), monthNumber, 1);
 
         LocalDateTime startMonth = LocalDateTime.of(LocalDate.now().getYear(), monthNumber, 1, 0,0,0);
         LocalDateTime endMonth = LocalDateTime.of(LocalDate.now().getYear(), monthNumber, init.lengthOfMonth(), 23,59,59);
         ArrayList<Shift> shifts = (ArrayList<Shift>) shiftRepo.findAllByShiftDateBetween(startMonth, endMonth);
-        resultSet = (HashSet<String>) shifts.stream().map(Shift::getName).collect(Collectors.toSet());
+        resultSet = shifts.stream().map(Shift::getName).collect(Collectors.toSet());
         return resultSet;
+    }
+
+    public Set<String> getNameInRange(LocalDate startRange, LocalDate endRange) {
+        LocalDateTime startMonth = startRange.atStartOfDay();
+        LocalDateTime endMonth = endRange.atTime(23, 59, 59);
+        ArrayList<Shift> shifts = (ArrayList<Shift>) shiftRepo.findAllByShiftDateBetween(startMonth, endMonth);
+        return shifts.stream().map(Shift::getName).collect(Collectors.toSet());
+    }
+
+    public LocalDate getDateFromString(String date) {
+        if (!date.isEmpty()) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            formatter = formatter.withLocale(Locale.ROOT);
+            return LocalDate.parse(date, formatter);
+        } else {
+            return LocalDate.now();
+        }
     }
 }
