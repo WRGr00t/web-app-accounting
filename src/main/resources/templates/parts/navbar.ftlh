@@ -15,6 +15,9 @@
       <li class="nav-item">
         <a class="nav-link" href="/inmonth">Анализ месяца</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/distrib">Распределение</a>
+      </li>
       <#if user??>
          <li class="nav-item">
             <a class="nav-link" href="/user/profile">Профиль</a>

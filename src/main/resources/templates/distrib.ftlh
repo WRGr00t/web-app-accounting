@@ -21,8 +21,8 @@
             <tr>
                 <th scope="col">Дата</th>
                 <th scope="col">День недели</th>
-                <th scope="col">Сотрудников дневной смены</th>
-                <th scope="col">Сотрудников ночной смены</th>
+                <th scope="col">В дневной смене</th>
+                <th scope="col">В ночной смене</th>
            </tr>
        </thead>
     <#list repos as repo>

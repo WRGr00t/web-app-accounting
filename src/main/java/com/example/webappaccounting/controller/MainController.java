@@ -141,19 +141,13 @@ public class MainController {
                 }
             }
             response.setDate(day);
-            System.out.println(response.getDate());
             Locale localeRu = new Locale("ru", "RU");
             response.setDayOfWeek(day.getDayOfWeek()
                     .getDisplayName(TextStyle.FULL, localeRu));
-            System.out.println(response.getDayOfWeek());
             response.setDayShiftCount(dayCount);
-            System.out.println(response.getDayShiftCount());
             response.setNightShiftCount(nightCount);
-            System.out.println(response.getNightShiftCount());
             responses.add(response);
-            System.out.println("===========");
             day = day.plusDays(1);
-            System.out.println(day);
         }
         model.put("repos", responses);
 
