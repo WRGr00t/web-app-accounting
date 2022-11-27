@@ -22,9 +22,9 @@ public class UploadController {
 
     @Autowired
     private ShiftRepo shiftRepo;
-    public static String UPLOAD_DIR = "src/main/java/com/example/webappaccounting/upload";
-    /*@Value("${upload.path}")
-    private String UPLOAD_DIR;*/
+    //public static String UPLOAD_DIR = "src/main/java/com/example/webappaccounting/upload";
+    @Value("${upload.path}")
+    private String UPLOAD_DIR;
 
     @GetMapping("/upload")
     public String displayUploadForm(Map<String, Object> model) throws IOException {
@@ -34,7 +34,13 @@ public class UploadController {
             file.mkdir();
         }
 
-        model.put("msg", listFiles(UPLOAD_DIR));
+        String listFiles = listFiles(UPLOAD_DIR);
+        if (!listFiles.isEmpty()) {
+            model.put("msg", listFiles);
+        } else {
+            model.put("msg", "No files in folder");
+        }
+
         return "upload";
     }
 
@@ -82,7 +88,7 @@ public class UploadController {
         return "uploadStatus";
     }
 
-    private String listFiles(String dir) throws IOException {
+    private String listFiles(String dir) {
         StringBuilder builder = new StringBuilder();
         File folder = new File(dir);
         for (File file : folder.listFiles()) {
