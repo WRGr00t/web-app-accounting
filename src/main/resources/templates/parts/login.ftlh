@@ -2,6 +2,9 @@
 
 <form action="${path}" method="post">
   <div class="form-group row">
+    <#if !isRegisterForm><a class="btn btn-outline-info" href="/registration">Зарегистрироваться</a></#if>
+  </div>
+  <div class="form-group row">
     <label class="col-sm-2 col-form-label"> User Name :</label>
     <div class="col-sm-6">
         <input type="text" value="<#if user??>${user.username}</#if>"
@@ -44,7 +47,6 @@
           </div>
       </#if>
     <input type="hidden" name="_csrf" value="${_csrf.token}"/>
-    <#if !isRegisterForm><a href="/registration">Add new user</a></#if>
     <button class="btn btn-outline-success my-2 my-sm-0" type="submit"><#if isRegisterForm>Добавить<#else>Войти</#if></button>
 </form>
 </#macro>
