@@ -273,7 +273,10 @@ public class ParseHelper {
         LocalDateTime startMonth = LocalDateTime.of(LocalDate.now().getYear(), monthNumber, 1, 0,0,0);
         LocalDateTime endMonth = LocalDateTime.of(LocalDate.now().getYear(), monthNumber, init.lengthOfMonth(), 23,59,59);
         ArrayList<Shift> shifts = (ArrayList<Shift>) shiftRepo.findAllByShiftDateBetween(startMonth, endMonth);
-        resultSet = shifts.stream().map(Shift::getName).collect(Collectors.toSet());
+        resultSet = shifts.stream()
+                .filter(x -> !x.getShiftType().equals("8*5"))
+                .map(Shift::getName)
+                .collect(Collectors.toSet());
         return resultSet;
     }
 
