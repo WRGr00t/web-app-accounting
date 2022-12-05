@@ -2,6 +2,7 @@ package com.example.webappaccounting.controller;
 
 import com.example.webappaccounting.model.Shift;
 import com.example.webappaccounting.repository.ShiftRepo;
+import com.example.webappaccounting.response.PersonalResponse;
 import com.example.webappaccounting.response.ShiftResponse;
 import com.example.webappaccounting.service.ParseHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -152,5 +153,60 @@ public class MainController {
         model.put("repos", responses);
 
         return "distrib";
+    }
+
+    @GetMapping("/forpersonal")
+    public String forpersonal(@RequestParam(name="start", required=false) String start,
+                          @RequestParam(name="end", required=false) String end,
+                              @RequestParam(name="person", required=false) String person,
+                          Map<String, Object> model) {
+        if (start == null || end == null) {
+            start = LocalDate.now().toString();
+            end = LocalDate.now().toString();
+        }
+        if (person == null) {
+            person = "";
+        }
+        model.put("select", person);
+
+        helper = new ParseHelper(shiftRepo);
+        LocalDate startYear = LocalDate.of(LocalDate.now().getYear(), 1, 1);
+        LocalDate endYear = LocalDate.of(LocalDate.now().getYear(), 12, 31);
+        LocalDate startDay = helper.getDateFromString(start);
+        LocalDate endDay = helper.getDateFromString(end);
+        int month = LocalDate.now().getMonthValue();
+        HashSet<String> persons = (HashSet<String>) helper.getNameInMonth(month);
+
+        model.put("startYear", startYear);
+        model.put("endYear", endYear);
+
+        model.put("dateStart", startDay);
+        model.put("dateEnd", endDay);
+
+        model.put("persons", persons);
+
+        ArrayList<PersonalResponse> responses = new ArrayList<>();
+
+        ArrayList<Shift> shifts = (ArrayList<Shift>) shiftRepo.findAllByNameAndShiftDateBetween(
+                person,
+                startDay.atStartOfDay(),
+                endDay.atTime(23, 59,59));
+        for (Shift shift : shifts) {
+            if (helper.isShiftTime(shift.getDescription())) {
+                PersonalResponse response = new PersonalResponse();
+                LocalDate day = shift.getShiftDate().toLocalDate();
+                response.setDate(day);
+                Locale localeRu = new Locale("ru", "RU");
+                response.setDayOfWeek(day.getDayOfWeek()
+                        .getDisplayName(TextStyle.FULL, localeRu));
+                response.setDescription(shift.getDescription());
+
+                responses.add(response);
+            }
+
+        }
+        model.put("repos", responses);
+
+        return "forpersonal";
     }
 }

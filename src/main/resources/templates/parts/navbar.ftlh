@@ -13,6 +13,9 @@
         <a class="nav-link" href="/inshift">Список смены</a>
       </li>
       <li class="nav-item">
+        <a class="nav-link" href="/forpersonal">Ближайшие смены</a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link" href="/inmonth">Анализ месяца</a>
       </li>
       <li class="nav-item">
