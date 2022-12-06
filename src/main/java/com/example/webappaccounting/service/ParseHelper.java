@@ -2,9 +2,9 @@ package com.example.webappaccounting.service;
 
 import com.example.webappaccounting.model.Shift;
 import com.example.webappaccounting.repository.ShiftRepo;
+import com.example.webappaccounting.response.ReportResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -240,29 +240,41 @@ public class ParseHelper {
         return count;
     }
 
-    public int getCountWorkingHoursInRange(String employeeName, LocalDate startRange, LocalDate endRange) {
+    public ReportResponse getCountWorkingHoursInRange(String employeeName, LocalDate startRange, LocalDate endRange) {
+        ReportResponse response = new ReportResponse();
         LocalDateTime startTime = startRange.atStartOfDay();
         LocalDateTime finishTime = endRange.atTime(23, 59, 59);
         ArrayList<Shift> shiftsByName = (ArrayList<Shift>) shiftRepo.findAllByNameAndShiftDateBetween(employeeName, startTime, finishTime);
-        int count = 0;
+        int countHours = 0;
+        int countShifts = 0;
+        int countShiftsWithoutDinner = 0;
         for (Shift shift : shiftsByName) {
             String desc = shift.getDescription();
             if (isShiftTime(desc)) {
+                countShifts++;
                 String[] times = desc.split("-");
                 int end = Integer.parseInt(times[1]);
                 int start = Integer.parseInt(times [0]);
                 if (start < end) {
-                    count = count + end - start;
+                    int duration = end - start;
+                    if (duration <= 4) {
+                        countShiftsWithoutDinner++;
+                    }
+                    countHours = countHours + duration;
                 } else {
                     if (shift.getShiftDate().isAfter(finishTime.minusDays(1))) {
-                        count = count + 24 - start;
+                        countHours = countHours + 24 - start;
                     } else {
-                        count = count + 24 - (start - end);
+                        countHours = countHours + 24 - (start - end);
                     }
                 }
             }
         }
-        return count;
+        response.setName(employeeName);
+        response.setCountHours(countHours);
+        response.setCountShifts(countShifts);
+        response.setCountShiftsWithoutDinner(countShiftsWithoutDinner);
+        return response;
 
     }
 
@@ -274,17 +286,31 @@ public class ParseHelper {
         LocalDateTime endMonth = LocalDateTime.of(LocalDate.now().getYear(), monthNumber, init.lengthOfMonth(), 23,59,59);
         ArrayList<Shift> shifts = (ArrayList<Shift>) shiftRepo.findAllByShiftDateBetween(startMonth, endMonth);
         resultSet = shifts.stream()
-                .filter(x -> !x.getShiftType().equals("8*5"))
                 .map(Shift::getName)
                 .collect(Collectors.toSet());
         return resultSet;
     }
 
     public Set<String> getNameInRange(LocalDate startRange, LocalDate endRange) {
+        Set<String> resultSet;
         LocalDateTime startMonth = startRange.atStartOfDay();
         LocalDateTime endMonth = endRange.atTime(23, 59, 59);
         ArrayList<Shift> shifts = (ArrayList<Shift>) shiftRepo.findAllByShiftDateBetween(startMonth, endMonth);
-        return shifts.stream().map(Shift::getName).collect(Collectors.toSet());
+        resultSet = shifts.stream()
+                .map(Shift::getName)
+                .collect(Collectors.toSet());
+        return resultSet;
+    }
+
+    public Set<String> getNameInRangeWithout85(LocalDate startRange, LocalDate endRange) {
+        LocalDateTime startMonth = startRange.atStartOfDay();
+        LocalDateTime endMonth = endRange.atTime(23, 59, 59);
+        ArrayList<Shift> shifts = (ArrayList<Shift>) shiftRepo.findAllByShiftDateBetween(startMonth, endMonth);
+        Set<String> resultSet = shifts.stream()
+                .filter(x -> !x.getShiftType().equals("8*5"))
+                .map(Shift::getName)
+                .collect(Collectors.toSet());
+        return resultSet;
     }
 
     public LocalDate getDateFromString(String date) {

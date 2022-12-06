@@ -3,6 +3,7 @@ package com.example.webappaccounting.controller;
 import com.example.webappaccounting.model.Shift;
 import com.example.webappaccounting.repository.ShiftRepo;
 import com.example.webappaccounting.response.PersonalResponse;
+import com.example.webappaccounting.response.ReportResponse;
 import com.example.webappaccounting.response.ShiftResponse;
 import com.example.webappaccounting.service.ParseHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,12 +92,16 @@ public class MainController {
         model.put("dateEnd", endDay);
 
         TreeMap<String, Integer> counter = new TreeMap<>();
+        TreeSet<ReportResponse> responses = new TreeSet<>();
         HashSet<String> names = (HashSet<String>) helper.getNameInRange(startDay, endDay);
         for (String name : names) {
-            counter.put(name, helper.getCountWorkingHoursInRange(name, startDay, endDay));
+            responses.add(helper.getCountWorkingHoursInRange(name, startDay, endDay));
+            //counter.put(name, helper.getCountWorkingHoursInRange(name, startDay, endDay));
         }
 
-        model.put("repos", counter);
+
+
+        model.put("repos", responses);
 
         return "inmonth";
     }
@@ -161,7 +166,7 @@ public class MainController {
                           Map<String, Object> model) {
         if (start == null || end == null) {
             start = LocalDate.now().toString();
-            end = LocalDate.now().toString();
+            end = LocalDate.now().plusWeeks(1).toString();
         }
         if (person == null) {
             person = "";
@@ -174,7 +179,9 @@ public class MainController {
         LocalDate startDay = helper.getDateFromString(start);
         LocalDate endDay = helper.getDateFromString(end);
         int month = LocalDate.now().getMonthValue();
-        HashSet<String> persons = (HashSet<String>) helper.getNameInMonth(month);
+        HashSet<String> persons = (HashSet<String>) helper.getNameInRangeWithout85(
+                startDay.minusMonths(2),
+                endYear.plusMonths(2));
 
         model.put("startYear", startYear);
         model.put("endYear", endYear);

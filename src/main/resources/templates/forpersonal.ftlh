@@ -3,7 +3,7 @@
 <div class="container">
     <form>
         <div class="form-group">
-            <div class="col-sm-6">
+            <div class="col-sm-7">
                 <div class="input-group date">
                     <input class="form-control" type="date" name="start" value=${dateStart}
                         max=${endYear} min=${startYear}>

@@ -21,12 +21,16 @@
             <tr>
                 <th scope="col">Сотрудник</th>
                 <th scope="col">Общее время</th>
+                <th scope="col">Количество смен</th>
+                <th scope="col">Из них смен без обеда</th>
            </tr>
        </thead>
-    <#list repos?keys as key>
+    <#list repos as repo>
         <tr scope="row">
-            <td>${key}</td>
-            <td><i>${repos[key]}</i></td>
+            <td>${repo.name}</td>
+            <td>${repo.countHours}</td>
+            <td>${repo.countShifts}</td>
+            <td>${repo.countShiftsWithoutDinner}</td>
         </tr>
     <#else>
     Нет данных для отображения
