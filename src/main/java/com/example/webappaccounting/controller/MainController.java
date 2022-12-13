@@ -6,6 +6,7 @@ import com.example.webappaccounting.response.PersonalResponse;
 import com.example.webappaccounting.response.ReportResponse;
 import com.example.webappaccounting.response.ShiftResponse;
 import com.example.webappaccounting.service.ParseHelper;
+import com.example.webappaccounting.service.ShiftServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,9 @@ import java.util.*;
 public class MainController {
     @Autowired
     private ShiftRepo shiftRepo;
+
+    @Autowired
+    private ShiftServiceImpl service;
 
     private ParseHelper helper ;
 
@@ -42,7 +46,7 @@ public class MainController {
 
         ArrayList<Shift> list = new ArrayList<>();
         ArrayList<Shift> nightShift = new ArrayList<>();
-        helper = new ParseHelper(shiftRepo);
+        helper = new ParseHelper(shiftRepo, service);
 
         LocalDateTime requestDate = helper.StringToLocalDateTime(date);
 
@@ -81,7 +85,7 @@ public class MainController {
             start = String.valueOf(initial.withDayOfMonth(1));
             end = String.valueOf(initial.withDayOfMonth(initial.lengthOfMonth()));
         }
-        helper = new ParseHelper(shiftRepo);
+        helper = new ParseHelper(shiftRepo, service);
 
         LocalDate startDay = helper.getDateFromString(start);
         LocalDate endDay = helper.getDateFromString(end);
@@ -118,7 +122,7 @@ public class MainController {
             start = LocalDate.now().toString();
             end = LocalDate.now().toString();
         }
-        helper = new ParseHelper(shiftRepo);
+        helper = new ParseHelper(shiftRepo, service);
 
         LocalDate startDay = helper.getDateFromString(start);
         LocalDate endDay = helper.getDateFromString(end);
@@ -177,7 +181,7 @@ public class MainController {
         }
         model.put("select", person);
 
-        helper = new ParseHelper(shiftRepo);
+        helper = new ParseHelper(shiftRepo, service);
 
         LocalDate startDay = helper.getDateFromString(start);
         LocalDate endDay = helper.getDateFromString(end);

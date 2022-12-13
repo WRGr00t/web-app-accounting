@@ -23,11 +23,15 @@ public class ParseHelper {
     @Autowired
     private ShiftRepo shiftRepo;
 
+    @Autowired
+    private ShiftServiceImpl service;
+
     @Value("${upload.path}")
     private String UPLOAD_DIR;
 
-    public ParseHelper(ShiftRepo shiftRepo) {
+    public ParseHelper(ShiftRepo shiftRepo, ShiftServiceImpl service) {
         this.shiftRepo = shiftRepo;
+        this.service = service;
     }
 
     public Set<Shift> ParseRecordCsv(String filePath) throws IOException {
@@ -87,7 +91,7 @@ public class ParseHelper {
                                             shift.getName(),
                                             shift.getShiftType())
                                     .isEmpty()){
-                                shiftRepo.save(shift);
+                                service.save(shift);
                             }
                         }
                     }
@@ -220,19 +224,11 @@ public class ParseHelper {
                 int start = Integer.parseInt(times [0]);
                 if (start < end) {
                     count = count + end - start;
-                    System.out.println(shift.getShiftDate() + " " + shift.getDescription());
-                    System.out.println(count);
                 } else {
                     if (shift.getShiftDate().isAfter(endMonth.minusDays(1))) {
-                        System.out.println(endMonth.minusDays(1).plusHours(1));
-                        System.out.println("last day");
                         count = count + 24 - start;
-                        System.out.println(shift.getShiftDate() + " " + shift.getDescription());
-                        System.out.println(count);
                     } else {
                         count = count + 24 - (start - end);
-                        System.out.println(shift.getShiftDate() + " " + shift.getDescription());
-                        System.out.println(count);
                     }
                 }
             }
