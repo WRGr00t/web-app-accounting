@@ -87,8 +87,6 @@ public class MainController {
         LocalDate endDay = helper.getDateFromString(end);
         startRange = shiftRepo.findMinimum().toLocalDate();
         endRange = shiftRepo.findMaximum().toLocalDate();
-        System.out.println(startRange);
-        System.out.println(endRange);
 
         model.put("startYear", startRange);
         model.put("endYear", endRange);
