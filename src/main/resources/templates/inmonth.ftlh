@@ -22,7 +22,8 @@
                 <th scope="col">Сотрудник</th>
                 <th scope="col">Общее время</th>
                 <th scope="col">Количество смен</th>
-                <th scope="col">Из них смен без обеда</th>
+                <th scope="col">Из них без обеда</th>
+                <th scope="col">Итог в часах</th>
            </tr>
        </thead>
     <#list repos as repo>
@@ -31,6 +32,7 @@
             <td>${repo.countHours}</td>
             <td>${repo.countShifts}</td>
             <td>${repo.countShiftsWithoutDinner}</td>
+            <td>${repo.countHours - repo.countShifts + repo.countShiftsWithoutDinner}</td>
         </tr>
     <#else>
     Нет данных для отображения
