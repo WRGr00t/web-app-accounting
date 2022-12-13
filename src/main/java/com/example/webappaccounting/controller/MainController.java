@@ -25,6 +25,9 @@ public class MainController {
     @Value("${upload.path}")
     private String UPLOAD_DIR;
 
+    private LocalDate startRange;
+    private LocalDate endRange;
+
     @GetMapping("/")
     public String home(Map<String, Object> model){
         LocalDate day = LocalDate.now();
@@ -36,6 +39,7 @@ public class MainController {
     public String main(@RequestParam(name="calendar", required=false) String date,
                        Map<String, Object> model) {
         Iterable<Shift> shiftIterable = shiftRepo.findAll();
+
         ArrayList<Shift> list = new ArrayList<>();
         ArrayList<Shift> nightShift = new ArrayList<>();
         helper = new ParseHelper(shiftRepo);
@@ -54,11 +58,11 @@ public class MainController {
             }
         }
         LocalDate localDate = requestDate.toLocalDate();
-        LocalDate startYear = LocalDate.of(LocalDate.now().getYear(),1, 1);
-        LocalDate endYear = LocalDate.of(LocalDate.now().getYear(),12, 31);
         LocalDate today = LocalDate.now();
-        model.put("startYear", startYear);
-        model.put("endYear", endYear);
+        startRange = shiftRepo.findMinimum().toLocalDate();
+        endRange = shiftRepo.findMaximum().toLocalDate();
+        model.put("startYear", startRange);
+        model.put("endYear", endRange);
         model.put("today", today);
         model.put("date", localDate);
         model.put("repos", list);
@@ -78,15 +82,16 @@ public class MainController {
             end = String.valueOf(initial.withDayOfMonth(initial.lengthOfMonth()));
         }
         helper = new ParseHelper(shiftRepo);
-        LocalDate startYear = LocalDate.of(LocalDate.now().getYear(),1, 1);
-        LocalDate endYear = LocalDate.of(LocalDate.now().getYear(),12, 31);
+
         LocalDate startDay = helper.getDateFromString(start);
         LocalDate endDay = helper.getDateFromString(end);
-        //LocalDateTime startRange = startDay.atStartOfDay();
-        //LocalDateTime endRange = endDay.atTime(23,59,59);
+        startRange = shiftRepo.findMinimum().toLocalDate();
+        endRange = shiftRepo.findMaximum().toLocalDate();
+        System.out.println(startRange);
+        System.out.println(endRange);
 
-        model.put("startYear", startYear);
-        model.put("endYear", endYear);
+        model.put("startYear", startRange);
+        model.put("endYear", endRange);
 
         model.put("dateStart", startDay);
         model.put("dateEnd", endDay);
@@ -116,13 +121,14 @@ public class MainController {
             end = LocalDate.now().toString();
         }
         helper = new ParseHelper(shiftRepo);
-        LocalDate startYear = LocalDate.of(LocalDate.now().getYear(), 1, 1);
-        LocalDate endYear = LocalDate.of(LocalDate.now().getYear(), 12, 31);
+
         LocalDate startDay = helper.getDateFromString(start);
         LocalDate endDay = helper.getDateFromString(end);
+        startRange = shiftRepo.findMinimum().toLocalDate();
+        endRange = shiftRepo.findMaximum().toLocalDate();
 
-        model.put("startYear", startYear);
-        model.put("endYear", endYear);
+        model.put("startYear", startRange);
+        model.put("endYear", endRange);
 
         model.put("dateStart", startDay);
         model.put("dateEnd", endDay);
@@ -174,17 +180,19 @@ public class MainController {
         model.put("select", person);
 
         helper = new ParseHelper(shiftRepo);
-        LocalDate startYear = LocalDate.of(LocalDate.now().getYear(), 1, 1);
-        LocalDate endYear = LocalDate.of(LocalDate.now().getYear(), 12, 31);
+
         LocalDate startDay = helper.getDateFromString(start);
         LocalDate endDay = helper.getDateFromString(end);
         int month = LocalDate.now().getMonthValue();
         HashSet<String> persons = (HashSet<String>) helper.getNameInRangeWithout85(
                 startDay.minusMonths(2),
-                endYear.plusMonths(2));
+                endDay.plusMonths(2));
 
-        model.put("startYear", startYear);
-        model.put("endYear", endYear);
+        startRange = shiftRepo.findMinimum().toLocalDate();
+        endRange = shiftRepo.findMaximum().toLocalDate();
+
+        model.put("startYear", startRange);
+        model.put("endYear", endRange);
 
         model.put("dateStart", startDay);
         model.put("dateEnd", endDay);

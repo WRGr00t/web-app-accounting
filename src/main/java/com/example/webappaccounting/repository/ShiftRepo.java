@@ -1,6 +1,7 @@
 package com.example.webappaccounting.repository;
 
 import com.example.webappaccounting.model.Shift;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import java.time.LocalDateTime;
@@ -40,5 +41,11 @@ public interface ShiftRepo extends CrudRepository<Shift, Long> {
     List<Shift> findAllByShiftDateBetween(
             LocalDateTime dayStart,
             LocalDateTime dayEnd);
+
+    @Query(value = "Select min(shift_time) from shifts", nativeQuery = true)
+    LocalDateTime findMinimum();
+
+    @Query(value = "Select max(shift_time) from shifts", nativeQuery = true)
+    LocalDateTime findMaximum();
 
 }
