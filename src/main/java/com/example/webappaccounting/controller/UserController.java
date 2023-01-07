@@ -54,8 +54,10 @@ public class UserController {
 
     @PostMapping("profile")
     public String updateProfile(@AuthenticationPrincipal User user,
+                                @RequestParam String username,
                                 @RequestParam String password) {
-        userService.updateProfile(user, password);
+        System.out.println(username);
+        userService.updateProfile(user, username, password);
 
         return "redirect:/user/profile";
     }

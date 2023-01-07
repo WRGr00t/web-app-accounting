@@ -3,7 +3,6 @@ package com.example.webappaccounting.service;
 import com.example.webappaccounting.model.Role;
 import com.example.webappaccounting.model.User;
 import com.example.webappaccounting.repository.UserRepo;
-import freemarker.template.utility.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -68,11 +67,13 @@ public class UserService implements UserDetailsService {
         userRepo.save(user);
     }
 
-    public void updateProfile(User user, String password) {
+    public void updateProfile(User user, String username, String password) {
+        if (!StringUtils.isEmpty(username) && !user.getUsername().equals(username)) {
+            user.setUsername(username);
+        }
         if (!StringUtils.isEmpty(password)) {
             user.setPassword(passwordEncoder.encode(password));
         }
-
         userRepo.save(user);
     }
 }
