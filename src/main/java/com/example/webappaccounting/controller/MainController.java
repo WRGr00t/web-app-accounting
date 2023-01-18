@@ -51,8 +51,8 @@ public class MainController {
         LocalDateTime requestDate = helper.StringToLocalDateTime(date);
 
         for (Shift s : shiftIterable) {
-            if (s.getShiftDate().isAfter(requestDate.minusMinutes(1)) &&
-                    s.getShiftDate().isBefore(requestDate.plusMinutes(1)) &&
+            if (s.getShiftDate().atStartOfDay().isAfter(requestDate.minusMinutes(1)) &&
+                    s.getShiftDate().atStartOfDay().isBefore(requestDate.plusMinutes(1)) &&
                     helper.isShiftTime(s.getDescription())) {
                 if (helper.isNightShift(s)) {
                     nightShift.add(s);
@@ -63,8 +63,8 @@ public class MainController {
         }
         LocalDate localDate = requestDate.toLocalDate();
         LocalDate today = LocalDate.now();
-        startRange = shiftRepo.findMinimum().toLocalDate();
-        endRange = shiftRepo.findMaximum().toLocalDate();
+        startRange = shiftRepo.findMinimum();
+        endRange = shiftRepo.findMaximum();
         model.put("startYear", startRange);
         model.put("endYear", endRange);
         model.put("today", today);
@@ -89,8 +89,8 @@ public class MainController {
 
         LocalDate startDay = helper.getDateFromString(start);
         LocalDate endDay = helper.getDateFromString(end);
-        startRange = shiftRepo.findMinimum().toLocalDate();
-        endRange = shiftRepo.findMaximum().toLocalDate();
+        startRange = shiftRepo.findMinimum();
+        endRange = shiftRepo.findMaximum();
 
         model.put("startYear", startRange);
         model.put("endYear", endRange);
@@ -126,8 +126,8 @@ public class MainController {
 
         LocalDate startDay = helper.getDateFromString(start);
         LocalDate endDay = helper.getDateFromString(end);
-        startRange = shiftRepo.findMinimum().toLocalDate();
-        endRange = shiftRepo.findMaximum().toLocalDate();
+        startRange = shiftRepo.findMinimum();
+        endRange = shiftRepo.findMaximum();
 
         model.put("startYear", startRange);
         model.put("endYear", endRange);
@@ -137,13 +137,14 @@ public class MainController {
 
         ArrayList<ShiftResponse> responses = new ArrayList<>();
         LocalDate day = startDay;
-        while (day.isBefore(endDay.plusDays(1))) {
+        do {
             ShiftResponse response = new ShiftResponse();
             ArrayList<Shift> shifts = (ArrayList<Shift>) shiftRepo.findAllByShiftDateBetween(
-                    day.atStartOfDay(),
-                    day.atTime(23, 59,59));
+                    day,
+                    day);
             int dayCount = 0;
             int nightCount = 0;
+
             for (Shift shift : shifts) {
                 if (helper.isShiftTime(shift.getDescription())) {
                     if (helper.isNightShift(shift)) {
@@ -161,7 +162,8 @@ public class MainController {
             response.setNightShiftCount(nightCount);
             responses.add(response);
             day = day.plusDays(1);
-        }
+        } while (day.isBefore(endDay));
+
         model.put("repos", responses);
 
         return "distrib";
@@ -190,8 +192,8 @@ public class MainController {
                 startDay.minusMonths(2),
                 endDay.plusMonths(2));
 
-        startRange = shiftRepo.findMinimum().toLocalDate();
-        endRange = shiftRepo.findMaximum().toLocalDate();
+        startRange = shiftRepo.findMinimum();
+        endRange = shiftRepo.findMaximum();
 
         model.put("startYear", startRange);
         model.put("endYear", endRange);
@@ -205,12 +207,12 @@ public class MainController {
 
         ArrayList<Shift> shifts = (ArrayList<Shift>) shiftRepo.findAllByNameAndShiftDateBetween(
                 person,
-                startDay.atStartOfDay(),
-                endDay.atTime(23, 59,59));
+                startDay,
+                endDay);
         for (Shift shift : shifts) {
             if (helper.isShiftTime(shift.getDescription())) {
                 PersonalResponse response = new PersonalResponse();
-                LocalDate day = shift.getShiftDate().toLocalDate();
+                LocalDate day = shift.getShiftDate();
                 response.setDate(day);
                 Locale localeRu = new Locale("ru", "RU");
                 response.setDayOfWeek(day.getDayOfWeek()

@@ -76,11 +76,10 @@ public class ParseHelper {
                     for (int i = shiftBeginPosition; i < columnList.size(); i++) {
                         String currentColumn = columnList.get(i);
                         if (!currentColumn.isEmpty()) {
-                            LocalDateTime dateShift = LocalDateTime.of(
+                            LocalDate dateShift = LocalDate.of(
                                     Integer.parseInt(currentYear),
                                     getNumberOfMonth(currentMonth),
-                                    (i - shiftBeginPosition + 1),
-                                    0, 0, 0);
+                                    (i - shiftBeginPosition + 1));
                             Shift shift = new Shift(dateShift,
                                     currentColumn,
                                     text,
@@ -212,8 +211,8 @@ public class ParseHelper {
     public int getCountWorkingHoursByMonth(String employeeName, int monthNumber, int year) {
         LocalDate init = LocalDate.of(year, monthNumber, 1);
 
-        LocalDateTime startMonth = LocalDateTime.of(year, monthNumber, 1, 0,0,0);
-        LocalDateTime endMonth = LocalDateTime.of(year, monthNumber, init.lengthOfMonth(), 23,59,59);
+        LocalDate startMonth = LocalDate.of(year, monthNumber, 1);
+        LocalDate endMonth = LocalDate.of(year, monthNumber, init.lengthOfMonth());
         ArrayList<Shift> shiftsByName = (ArrayList<Shift>) shiftRepo.findAllByNameAndShiftDateBetween(employeeName, startMonth, endMonth);
         int count = 0;
         for (Shift shift : shiftsByName) {
@@ -238,9 +237,9 @@ public class ParseHelper {
 
     public ReportResponse getCountWorkingHoursInRange(String employeeName, LocalDate startRange, LocalDate endRange) {
         ReportResponse response = new ReportResponse();
-        LocalDateTime startTime = startRange.atStartOfDay();
-        LocalDateTime finishTime = endRange.atTime(23, 59, 59);
-        ArrayList<Shift> shiftsByName = (ArrayList<Shift>) shiftRepo.findAllByNameAndShiftDateBetween(employeeName, startTime, finishTime);
+        //LocalDate startTime = startRange.atStartOfDay();
+        //LocalDate finishTime = endRange.atTime(23, 59, 59);
+        ArrayList<Shift> shiftsByName = (ArrayList<Shift>) shiftRepo.findAllByNameAndShiftDateBetween(employeeName, startRange, endRange);
         int countHours = 0;
         int countShifts = 0;
         int countShiftsWithoutDinner = 0;
@@ -258,7 +257,7 @@ public class ParseHelper {
                     }
                     countHours = countHours + duration;
                 } else {
-                    if (shift.getShiftDate().isAfter(finishTime.minusDays(1))) {
+                    if (shift.getShiftDate().isAfter(endRange.minusDays(1))) {
                         countHours = countHours + 24 - start;
                     } else {
                         countHours = countHours + 24 - (start - end);
@@ -278,8 +277,8 @@ public class ParseHelper {
         Set<String> resultSet;
         LocalDate init = LocalDate.of(LocalDate.now().getYear(), monthNumber, 1);
 
-        LocalDateTime startMonth = LocalDateTime.of(LocalDate.now().getYear(), monthNumber, 1, 0,0,0);
-        LocalDateTime endMonth = LocalDateTime.of(LocalDate.now().getYear(), monthNumber, init.lengthOfMonth(), 23,59,59);
+        LocalDate startMonth = LocalDate.of(LocalDate.now().getYear(), monthNumber, 1);
+        LocalDate endMonth = LocalDate.of(LocalDate.now().getYear(), monthNumber, init.lengthOfMonth());
         ArrayList<Shift> shifts = (ArrayList<Shift>) shiftRepo.findAllByShiftDateBetween(startMonth, endMonth);
         resultSet = shifts.stream()
                 .map(Shift::getName)
@@ -289,9 +288,8 @@ public class ParseHelper {
 
     public Set<String> getNameInRange(LocalDate startRange, LocalDate endRange) {
         Set<String> resultSet;
-        LocalDateTime startMonth = startRange.atStartOfDay();
-        LocalDateTime endMonth = endRange.atTime(23, 59, 59);
-        ArrayList<Shift> shifts = (ArrayList<Shift>) shiftRepo.findAllByShiftDateBetween(startMonth, endMonth);
+
+        ArrayList<Shift> shifts = (ArrayList<Shift>) shiftRepo.findAllByShiftDateBetween(startRange, endRange);
         resultSet = shifts.stream()
                 .map(Shift::getName)
                 .collect(Collectors.toSet());
@@ -299,9 +297,7 @@ public class ParseHelper {
     }
 
     public Set<String> getNameInRangeWithout85(LocalDate startRange, LocalDate endRange) {
-        LocalDateTime startMonth = startRange.atStartOfDay();
-        LocalDateTime endMonth = endRange.atTime(23, 59, 59);
-        ArrayList<Shift> shifts = (ArrayList<Shift>) shiftRepo.findAllByShiftDateBetween(startMonth, endMonth);
+        ArrayList<Shift> shifts = (ArrayList<Shift>) shiftRepo.findAllByShiftDateBetween(startRange, endRange);
         Set<String> resultSet = shifts.stream()
                 .filter(x -> !x.getShiftType().equals("8*5"))
                 .map(Shift::getName)

@@ -1,6 +1,7 @@
 package com.example.webappaccounting.model;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -12,8 +13,8 @@ public class Shift implements Comparable<Shift>{
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private Long id;
-    @Column(name = "shift_time", columnDefinition = "DATETIME", nullable = false)
-    private LocalDateTime shiftDate;
+    @Column(name = "shift_date", columnDefinition = "DATE", nullable = false)
+    private LocalDate shiftDate;
     @Column(columnDefinition = "VARCHAR(255)", nullable = false)
     private String description;
 
@@ -26,29 +27,29 @@ public class Shift implements Comparable<Shift>{
     public Shift() {
     }
 
-    public Shift(LocalDateTime shiftDate, String description) {
+    public Shift(LocalDate shiftDate, String description) {
         this.shiftDate = shiftDate;
         this.description = description;
     }
 
-    public Shift(LocalDateTime shiftDate, String description, String name) {
+    public Shift(LocalDate shiftDate, String description, String name) {
         this.shiftDate = shiftDate;
         this.description = description;
         this.name = name;
     }
 
-    public Shift(LocalDateTime shiftDate, String description, String name, String shiftType) {
+    public Shift(LocalDate shiftDate, String description, String name, String shiftType) {
         this.shiftDate = shiftDate;
         this.description = description;
         this.name = name;
         this.shiftType = shiftType;
     }
 
-    public LocalDateTime getShiftDate() {
+    public LocalDate getShiftDate() {
         return shiftDate;
     }
 
-    public void setShiftDate(LocalDateTime shiftDate) {
+    public void setShiftDate(LocalDate shiftDate) {
         this.shiftDate = shiftDate;
     }
 
