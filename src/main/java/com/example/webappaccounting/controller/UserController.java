@@ -56,7 +56,6 @@ public class UserController {
     public String updateProfile(@AuthenticationPrincipal User user,
                                 @RequestParam String username,
                                 @RequestParam String password) {
-        System.out.println(username);
         userService.updateProfile(user, username, password);
 
         return "redirect:/user/profile";

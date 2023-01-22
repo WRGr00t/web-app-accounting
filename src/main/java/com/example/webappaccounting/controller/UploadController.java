@@ -3,6 +3,8 @@ package com.example.webappaccounting.controller;
 import com.example.webappaccounting.repository.ShiftRepo;
 import com.example.webappaccounting.service.ParseHelper;
 import com.example.webappaccounting.service.ShiftServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -20,15 +22,16 @@ import java.util.*;
 
 @Controller
 public class UploadController {
+    private static final Logger logger = LoggerFactory.getLogger(UploadController.class);
 
     @Autowired
     private ShiftRepo shiftRepo;
 
     @Autowired
     private ShiftServiceImpl service;
-    //public static String UPLOAD_DIR = "src/main/java/com/example/webappaccounting/upload";
-    @Value("${upload.path}")
-    private String UPLOAD_DIR;
+    private static String UPLOAD_DIR = "src/main/java/com/example/webappaccounting/upload";
+    /*@Value("${upload.path}")
+    private String UPLOAD_DIR;*/
 
     @GetMapping("/upload")
     public String displayUploadForm(Map<String, Object> model) throws IOException {
@@ -79,6 +82,7 @@ public class UploadController {
             //shiftRepo.deleteAll();
             ParseHelper helper = new ParseHelper(shiftRepo, service);
             helper.ParseRecordCsv(path.toString());
+            logger.debug("загружен файл");
 
         } catch (IOException e) {
             e.printStackTrace();
