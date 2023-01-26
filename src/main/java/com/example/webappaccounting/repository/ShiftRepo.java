@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ShiftRepo extends CrudRepository<Shift, Long> {
-    Optional<Shift> findAllByShiftDate(LocalDate shiftDate);
+    List<Shift> findAllByShiftDate(LocalDate shiftDate);
 
     Optional<Shift> findAllByShiftDateAndDescriptionAndName(
             LocalDate shiftDate,
