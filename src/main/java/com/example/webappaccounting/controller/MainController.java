@@ -98,7 +98,7 @@ public class MainController {
         model.put("dateStart", startDay);
         model.put("dateEnd", endDay);
 
-        TreeMap<String, Integer> counter = new TreeMap<>();
+        //TreeMap<String, Integer> counter = new TreeMap<>();
         TreeSet<ReportResponse> responses = new TreeSet<>();
         HashSet<String> names = (HashSet<String>) helper.getNameInRange(startDay, endDay);
         for (String name : names) {
@@ -120,7 +120,7 @@ public class MainController {
 
         if (start == null || end == null) {
             start = LocalDate.now().toString();
-            end = LocalDate.now().toString();
+            end = LocalDate.now().plusWeeks(1).toString();
         }
         helper = new ParseHelper(shiftRepo, service);
 
@@ -187,7 +187,7 @@ public class MainController {
 
         LocalDate startDay = helper.getDateFromString(start);
         LocalDate endDay = helper.getDateFromString(end);
-        int month = LocalDate.now().getMonthValue();
+        //int month = LocalDate.now().getMonthValue();
         HashSet<String> persons = (HashSet<String>) helper.getNameInRangeWithout85(
                 startDay.minusMonths(2),
                 endDay.plusMonths(2));
