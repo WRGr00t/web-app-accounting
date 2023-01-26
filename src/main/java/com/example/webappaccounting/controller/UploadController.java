@@ -79,7 +79,7 @@ public class UploadController {
 
             redirectAttributes.addFlashAttribute("message",
                     "Успешно загружен файл '" + file.getOriginalFilename() + "'");
-            //shiftRepo.deleteAll();
+            shiftRepo.deleteAll();
             ParseHelper helper = new ParseHelper(shiftRepo, service);
             helper.ParseRecordCsv(path.toString());
             logger.debug("загружен файл");
