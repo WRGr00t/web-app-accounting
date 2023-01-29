@@ -29,9 +29,9 @@ public class UploadController {
 
     @Autowired
     private ShiftServiceImpl service;
-    private static String UPLOAD_DIR = "src/main/java/com/example/webappaccounting/upload";
-    /*@Value("${upload.path}")
-    private String UPLOAD_DIR;*/
+    //private static String UPLOAD_DIR = "src/main/java/com/example/webappaccounting/upload";
+    @Value("${upload.path}")
+    private String UPLOAD_DIR;
 
     @GetMapping("/upload")
     public String displayUploadForm(Map<String, Object> model) throws IOException {
@@ -72,7 +72,7 @@ public class UploadController {
 
         try {
 
-// Получить файл и сохранить его где-нибудь
+            // Получить файл и сохранить его где-нибудь
             byte[] bytes = file.getBytes();
             Path path = Paths.get(UPLOAD_DIR, file.getOriginalFilename());
             Files.write(path, bytes);
@@ -99,7 +99,7 @@ public class UploadController {
     private String listFiles(String dir) {
         StringBuilder builder = new StringBuilder();
         File folder = new File(dir);
-        for (File file : folder.listFiles()) {
+        for (File file : Objects.requireNonNull(folder.listFiles())) {
             builder.append(file.getName())
                     .append('\n');
         }

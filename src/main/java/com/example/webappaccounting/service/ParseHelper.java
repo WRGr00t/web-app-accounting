@@ -175,7 +175,9 @@ public class ParseHelper {
     }
 
     private static boolean IsName(String text) {
-        Pattern pattern = Pattern.compile("([А-ЯЁ][а-яё]+[\\-\\s]?\\s[А-ЯЁ]?\\.?$)");
+        //регулярное выражение на запись имени сотрудника типа Иванов И, Иванов И., Иванов Иван
+        String reg = "^([А-ЯЁ][а-яё]+[\\-\\s]?\\s[А-Я]{1}[а-яё]{1,23}|[А-ЯЁ][а-яё]+[\\-\\s]?\\s[А-ЯЁ]?\\.?)$";
+        Pattern pattern = Pattern.compile(reg);
         Matcher matcher;
         matcher = pattern.matcher(text);
         return matcher.find();
