@@ -50,17 +50,25 @@ public class ParseHelper {
                 currentMonth = words[monthPosition].toLowerCase();
                 currentYear = words[yearPosition];
             }
-            String[] splitedText = fileLine.split(";");
+            //Добавляем только строчки без пустых смен на весь месяц
+            String sub = fileLine.replaceFirst(
+                    "^([А-ЯЁ][а-яё]+[\\-\\s]?\\s[А-Я]{1}[а-яё]{1,23}|[А-ЯЁ][а-яё]+[\\-\\s]?\\s[А-ЯЁ]?\\.?)",
+                    "");
+            sub = sub.replaceAll(";", "");
             ArrayList<String> columnList = new ArrayList<>();
-            for (String s : splitedText) {
-                //Если колонка начинается на кавычки или заканчиваеться на кавычки
-                if (IsColumnPart(s)) {
-                    String lastText = columnList.get(columnList.size() - 1);
-                    columnList.set(columnList.size() - 1, lastText + ";" + s);
-                } else {
-                    columnList.add(s);
+            if (!sub.isEmpty()) {
+                String[] splitedText = fileLine.split(";");
+                for (String s : splitedText) {
+                    //Если колонка начинается на кавычки или заканчиваеться на кавычки
+                    if (IsColumnPart(s)) {
+                        String lastText = columnList.get(columnList.size() - 1);
+                        columnList.set(columnList.size() - 1, lastText + ";" + s);
+                    } else {
+                        columnList.add(s);
+                    }
                 }
             }
+
 
             if (columnList.size() > 0) {
                 int namePosition = 0;
