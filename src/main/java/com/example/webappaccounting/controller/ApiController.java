@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @RestController
@@ -51,9 +51,26 @@ public class ApiController {
         return getShift(id);
     }
 
+    @GetMapping("/byname")
+    public ArrayList<LocalDate> getByName(@RequestParam String name, @RequestParam int year) {
+        return getShiftByName(name, year);
+    }
+
     private Shift getShift(Long id) {
         return shiftRepo.findById(id)
                 .orElseThrow(() -> new ShiftNotFoundException(id));
+    }
+
+    private ArrayList<LocalDate> getShiftByName(String name, int year) {
+        ArrayList<Shift> list = (ArrayList<Shift>) shiftRepo.findAllByNameAndShiftDateBetween(
+                name,
+                LocalDate.of(year, 1, 1),
+                LocalDate.of(year, 12, 31));
+        List<LocalDate> result = list.stream()
+                .filter(shift -> Pattern.matches("^\\d{1,2}\\-\\d{1,2}$", shift.getDescription()))
+                .map(Shift::getShiftDate)
+                .collect(Collectors.toList());
+        return (ArrayList<LocalDate>) result;
     }
 
     @PostMapping
