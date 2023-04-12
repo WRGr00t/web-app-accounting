@@ -17,8 +17,8 @@ public class AuthenticationSuccessListenerImpl implements ApplicationListener<Au
     public void onApplicationEvent(AuthenticationSuccessEvent authenticationSuccessEvent) {
         UserDetails userDetails = (UserDetails) authenticationSuccessEvent.getAuthentication().getPrincipal();
         String pathToFile =
-        "src/main/java/com/example/webappaccounting/upload/app.log";
-        //"/root/tmp/upload/app.log";
+        //"src/main/java/com/example/webappaccounting/upload/app.log";
+        "/root/tmp/upload/app.log";
         String log = String.format(" вход пользователя %s", userDetails.getUsername());
         try {
             recordLog(pathToFile, log);

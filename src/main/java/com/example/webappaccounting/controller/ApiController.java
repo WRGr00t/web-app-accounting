@@ -3,14 +3,17 @@ package com.example.webappaccounting.controller;
 import com.example.webappaccounting.exceptions.ShiftNotFoundException;
 import com.example.webappaccounting.model.Shift;
 import com.example.webappaccounting.repository.ShiftRepo;
+import com.example.webappaccounting.response.CalendarResponse;
 import com.example.webappaccounting.service.ParseHelper;
 import com.example.webappaccounting.service.ShiftServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -56,6 +59,46 @@ public class ApiController {
         return getShiftByName(name, year);
     }
 
+    @GetMapping("/isnight")
+    public Boolean getByName(@RequestParam String name, @RequestParam String date) {
+        boolean result;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        formatter = formatter.withLocale(Locale.forLanguageTag("ru-RU"));
+        LocalDate localDate = LocalDate.parse(date, formatter);
+        ParseHelper helper = new ParseHelper(shiftRepo, service);
+        Shift shift = shiftRepo.findOneByNameAndShiftDate(name, localDate);
+        if (shift != null) {
+            result = helper.isNightShift(shift);
+        } else {
+            result = false;
+        }
+
+        return result;
+    }
+
+    @GetMapping("/bynameandmonth")
+    public ArrayList<CalendarResponse> getShiftForCalendar(@RequestParam String name,
+                                                           @RequestParam int year,
+                                                           @RequestParam(required = false) String monthNumber) {
+        ArrayList<Shift> list;
+        if (monthNumber != null && !monthNumber.trim().isEmpty()) {
+            list = (ArrayList<Shift>) shiftRepo.findAllByNameAndShiftDateBetween(
+                    name,
+                    LocalDate.of(year, Integer.parseInt(monthNumber), 1),
+                    LocalDate.of(year, Integer.parseInt(monthNumber),
+                            LocalDate.of(year, Integer.parseInt(monthNumber), 1).lengthOfMonth()));
+        } else {
+            list = (ArrayList<Shift>) shiftRepo.findAllByNameAndShiftDateBetween(
+                    name,
+                    LocalDate.of(year, 1, 1),
+                    LocalDate.of(year, 12, 31));
+        }
+        ParseHelper helper = new ParseHelper(shiftRepo, service);
+        return (ArrayList<CalendarResponse>) list.stream()
+                .map(x -> new CalendarResponse(x.getShiftDate(), helper.isNightShift(x)))
+                .collect(Collectors.toList());
+    }
+
     private Shift getShift(Long id) {
         return shiftRepo.findById(id)
                 .orElseThrow(() -> new ShiftNotFoundException(id));
@@ -72,6 +115,8 @@ public class ApiController {
                 .collect(Collectors.toList());
         return (ArrayList<LocalDate>) result;
     }
+
+
 
     @PostMapping
     public Shift create (@RequestBody Shift shift) {

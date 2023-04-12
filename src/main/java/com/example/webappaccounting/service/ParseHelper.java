@@ -213,9 +213,14 @@ public class ParseHelper {
     }
 
     public boolean isNightShift(Shift shift) {
-        String description = shift.getDescription();
-        String[] hours = description.split("-");
-        return Integer.parseInt(hours[0]) > Integer.parseInt(hours[1]);
+        if (isShiftTime(shift.getDescription())) {
+            String description = shift.getDescription();
+            String[] hours = description.split("-");
+            return Integer.parseInt(hours[0]) > Integer.parseInt(hours[1]);
+        } else {
+            return false;
+        }
+
     }
 
     public int getCountWorkingHoursByMonth(String employeeName, int monthNumber, int year) {

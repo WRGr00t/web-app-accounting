@@ -30,7 +30,6 @@ function getPerson(name) {
         {
             shiftDates = value
             renderCalendar(year, shiftDates)
-            //console.log(shiftDates)
         })
     }
 
@@ -41,9 +40,14 @@ function getShifts(name) {
     .then((result) => result.json())
 }
 
+function getShiftsWithFlag(name) {
+    let requestURL = "api/bynameandmonth?name=" + name + "&year=" + year + "&month=" + month
+    return fetch(requestURL)
+    .then((result) => result.json())
+}
+
 const year = new Date().getFullYear()
 dom.year.innerHTML = year
-
 
 function renderCalendar(year) {
 //удаление календаря предыдущего сотрудника
@@ -67,7 +71,7 @@ function buildMonth(monthNumber, year) {
 	monthContentHTML.push(buildMonthHeadHTML(month.name))
 	monthContentHTML.push('<div class="month_content">')
 	monthContentHTML.push(buildWeekDaysNames())
-	monthContentHTML.push(buildDates(year, monthNumber, month.days))
+	monthContentHTML.push(buildDates(year, monthNumber))
 	monthContentHTML.push('</div>')
 
 	monthBox.innerHTML = monthContentHTML.join('')
@@ -107,6 +111,28 @@ function isShift(year, month, day) {
     return false
 }
 
+function isNightShift(year, month, day) {
+    let date = new Date (year, month, day)
+    const options = {year: 'numeric', month: 'numeric', day: 'numeric' };
+    //let requestURL = "/api/isnight?name=" + employee + "&date=" + date.toLocaleDateString('ru-RU', options)
+
+    let requestURL = "api/bynameandmonth?name=" + employee + "&year=" + year + "&month=" + month
+
+    let isNightText = false
+    let resp = fetch(requestURL).then(
+          successResponse => {
+            if (successResponse.status != 200) {
+              return null;
+            } else {
+              return successResponse.json();
+            }
+          },
+          failResponse => {
+            return null;
+          }
+        )
+}
+
 function buildDates(year, month) {
 
 	const date = new Date(year, month, 1)
@@ -123,10 +149,12 @@ function buildDates(year, month) {
 		}
 		else {
 		    let isInShift = isShift(year, month, day)
+		    let isNight = ''
+		    isNight = isNightShift(year, month, day)
 			if ((i + day) % 7 == 0 || (i + day) % 7 == 1) {
-				dateHTML = buildDate(day, true, isInShift)
+				dateHTML = buildDate(day, month, true, isInShift, isNight)
 			} else {
-				dateHTML = buildDate(day, false, isInShift)
+				dateHTML = buildDate(day, month, false, isInShift, isNight)
 			}
 
 			day++
@@ -136,10 +164,13 @@ function buildDates(year, month) {
 	return datesHTML.join('')
 }
 
-function buildDate(content, isAccent = false, isRound = false) {
+function buildDate(content, month, isAccent = false, isRound = false, isNight = false) {
 	let cls = isAccent ? 'month_date month_date_accent' : 'month_date'
-	if (isRound) {
+	let contentId = content + "_" + month
+	if (isRound && !isNight) {
 	    cls = cls + ' round'
+	} else if (isNight) {
+	    cls = cls + ' night'
 	}
-	return `<div class="${cls}">${content}</div>`
+	return `<div id="${contentId}" class="${cls}">${content}</div>`
 }
