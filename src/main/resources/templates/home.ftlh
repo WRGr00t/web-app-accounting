@@ -10,13 +10,7 @@
         </#if>
         <#if known>
             <a href="/calendar">Календарь</a>
-            <iframe frameborder="0" style="border:none;width:100%;height:450px;" width="100%" height="450" src="https://music.yandex.ru/iframe/#playlist/music-blog/1528">
-                Слушайте
-                <a href='https://music.yandex.ru/users/music-blog/playlists/1528'>Хиты в акустике</a>
-                 —
-                <a href='https://music.yandex.ru/users/music-blog'>Яндекс Музыка</a>
-                на Яндекс Музыке
-            </iframe>
+            <iframe frameborder="0" style="border:none;width:100%;height:450px;" width="100%" height="450" src="https://music.yandex.ru/iframe/#playlist/music-blog/1101">Слушайте <a href='https://music.yandex.ru/users/music-blog/playlists/1101'>100 суперхитов</a> — <a href='https://music.yandex.ru/users/music-blog'>Яндекс Музыка</a> на Яндекс Музыке</iframe>
         </#if>
     </div>
 

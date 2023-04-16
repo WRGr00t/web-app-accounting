@@ -1,6 +1,7 @@
 package com.example.webappaccounting.service;
 
 import com.example.webappaccounting.model.Shift;
+import com.example.webappaccounting.model.Status;
 import com.example.webappaccounting.repository.ShiftRepo;
 import com.example.webappaccounting.response.ReportResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -328,5 +329,25 @@ public class ParseHelper {
         } else {
             return LocalDate.now();
         }
+    }
+
+    public Status getStatus(Shift shift) {
+        String desc = shift.getDescription().toUpperCase();
+        Status result = Status.DAYSHIFT;
+        if (isNightShift(shift)) {
+            result = Status.NIGHTSHIFT;
+        }
+        switch (desc) {
+            case "О":
+            case "ОТ": {
+                result = Status.HOLIDAY;
+                break;
+            }
+            case "Б": {
+                result = Status.SICKDAY;
+                break;
+            }
+        }
+        return result;
     }
 }

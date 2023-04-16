@@ -19,29 +19,35 @@ const months = [
 		{name: 'Декабрь'},
 	]
 
-	let employee = ''
+	//let employee = ''
 	let shiftDates = []
+	let shiftObj = []
 
 function getPerson(name) {
 
     dom.person.innerHTML = name
-    employee = name
+    //employee = name
+
+    getShiftObjs(name).then(function(value)
+        {
+            shiftObj = value
+        /*})
+
     getShifts(name).then(function(value)
         {
-            shiftDates = value
-            renderCalendar(year, shiftDates)
+            shiftDates = value*/
+            renderCalendar(year)
         })
     }
 
-function getShifts(name) {
-    let requestURL = "/api/byname?name=" + name + "&year=" + year
-
+function getShiftObjs(name) {
+    let requestURL = "/api/bynameandmonth?name=" + name + "&year=" + year
     return fetch(requestURL)
-    .then((result) => result.json())
+        .then((result) => result.json())
 }
 
-function getShiftsWithFlag(name) {
-    let requestURL = "api/bynameandmonth?name=" + name + "&year=" + year + "&month=" + month
+function getShifts(name) {
+    let requestURL = "/api/byname?name=" + name + "&year=" + year
     return fetch(requestURL)
     .then((result) => result.json())
 }
@@ -100,7 +106,7 @@ function buildWeekDaysNames() {
 	return daysNames.join('')
 }
 
-function isShift(year, month, day) {
+/*function isShift(year, month, day) {
     let date = new Date (year, month, day)
     for (let key in shiftDates) {
        let shift = new Date(shiftDates[key].split('-'));
@@ -109,28 +115,25 @@ function isShift(year, month, day) {
        }
     }
     return false
-}
+}*/
+function isShift(year, month, day) {
+    month = month + 1
+        if(month < 10) {
+            month = '0' + month
+        }
+        if(day < 10) {
+            day = '0' + day
+        }
+        let dateText = year + '-' + month + '-' + day
+        let isShiftText = false
 
-function isNightShift(year, month, day) {
-    let date = new Date (year, month, day)
-    const options = {year: 'numeric', month: 'numeric', day: 'numeric' };
-    //let requestURL = "/api/isnight?name=" + employee + "&date=" + date.toLocaleDateString('ru-RU', options)
-
-    let requestURL = "api/bynameandmonth?name=" + employee + "&year=" + year + "&month=" + month
-
-    let isNightText = false
-    let resp = fetch(requestURL).then(
-          successResponse => {
-            if (successResponse.status != 200) {
-              return null;
-            } else {
-              return successResponse.json();
+        for (let key in shiftObj) {
+            let d = shiftObj[key].date
+            if (d === dateText){
+                isShiftText = true
             }
-          },
-          failResponse => {
-            return null;
-          }
-        )
+        }
+    return isShiftText
 }
 
 function buildDates(year, month) {
@@ -148,15 +151,12 @@ function buildDates(year, month) {
 			i++
 		}
 		else {
-		    let isInShift = isShift(year, month, day)
-		    let isNight = ''
-		    isNight = isNightShift(year, month, day)
+		    let status = getStatus(year, month, day)
 			if ((i + day) % 7 == 0 || (i + day) % 7 == 1) {
-				dateHTML = buildDate(day, month, true, isInShift, isNight)
+				dateHTML = buildDate(day, month, true, status)
 			} else {
-				dateHTML = buildDate(day, month, false, isInShift, isNight)
+				dateHTML = buildDate(day, month, false, status)
 			}
-
 			day++
 		}
 		datesHTML.push(dateHTML)
@@ -164,13 +164,48 @@ function buildDates(year, month) {
 	return datesHTML.join('')
 }
 
-function buildDate(content, month, isAccent = false, isRound = false, isNight = false) {
+function buildDate(content, month, isAccent = false, status) {
 	let cls = isAccent ? 'month_date month_date_accent' : 'month_date'
-	let contentId = content + "_" + month
-	if (isRound && !isNight) {
-	    cls = cls + ' round'
-	} else if (isNight) {
-	    cls = cls + ' night'
-	}
-	return `<div id="${contentId}" class="${cls}">${content}</div>`
+
+    switch (status) {
+      case 'DAYSHIFT': {
+        cls = cls + ' day';
+        break;
+      }
+      case 'NIGHTSHIFT': {
+        cls = cls + ' night';
+        break;
+      }
+      case 'HOLIDAY': {
+        cls = cls + ' holiday';
+        break;
+      }
+      case 'SICKDAY': {
+        cls = cls + ' sickday';
+        break;
+      }
+    }
+	return `<div class="${cls}">${content}</div>`
+}
+
+function getStatus(year, month, day) {
+    month = month + 1
+    if(month < 10) {
+        month = '0' + month
+    }
+    if(day < 10) {
+        day = '0' + day
+    }
+    let dateText = year + '-' + month + '-' + day
+    let status
+
+    for (let key in shiftObj) {
+        let d = shiftObj[key].date
+        if (d === dateText){
+            status = shiftObj[key].status
+            //console.log(shiftObj[key].name + ' ' + shiftObj[key].date + ' ' + shiftObj[key].status)
+        }
+    }
+
+    return status
 }

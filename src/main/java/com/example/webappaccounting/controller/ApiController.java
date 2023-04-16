@@ -95,7 +95,10 @@ public class ApiController {
         }
         ParseHelper helper = new ParseHelper(shiftRepo, service);
         return (ArrayList<CalendarResponse>) list.stream()
-                .map(x -> new CalendarResponse(x.getShiftDate(), helper.isNightShift(x)))
+                .map(x -> new CalendarResponse(
+                        x.getName(),
+                        x.getShiftDate(),
+                        helper.getStatus(x)))
                 .collect(Collectors.toList());
     }
 

@@ -38,7 +38,7 @@ body {
 	grid-gap: 32px;
 }
 
-.round {
+.day {
   width: 10em;
   height: 10em;
   /*border: 2px #AC25FF;*/
@@ -49,12 +49,33 @@ body {
 }
 
 .night {
+  text-shadow: 1px 1px 1px #fff;
   width: 10em;
   height: 10em;
   border-radius: 50%;
   line-height: 10em;
   text-align: center;
-  background: #13206a;
+  background: LightSlateGray;
+}
+
+.holiday {
+  text-shadow: 1px 1px 1px #fff;
+  width: 10em;
+  height: 10em;
+  border-radius: 50%;
+  line-height: 10em;
+  text-align: center;
+  background: LightSteelBlue;
+}
+
+.sickday {
+  text-shadow: 1px 1px 1px #fff;
+  width: 10em;
+  height: 10em;
+  border-radius: 50%;
+  line-height: 10em;
+  text-align: center;
+  background: MediumVioletRed;
 }
 
 .month_name {
