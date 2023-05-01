@@ -98,7 +98,8 @@ public class ApiController {
                 .map(x -> new CalendarResponse(
                         x.getName(),
                         x.getShiftDate(),
-                        helper.getStatus(x)))
+                        helper.getStatus(x),
+                        x.getDescription()))
                 .collect(Collectors.toList());
     }
 

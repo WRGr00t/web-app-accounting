@@ -166,14 +166,19 @@ function buildDates(year, month) {
 
 function buildDate(content, month, isAccent = false, status) {
 	let cls = isAccent ? 'month_date month_date_accent' : 'month_date'
-
+    let desc = ""
     switch (status) {
       case 'DAYSHIFT': {
         cls = cls + ' day';
+        //let normMonth = normalizeMonth(month);
+        //let normDay = normalizeDay(content);
+        desc = getDescription(year, month, content);
+        //console.log(normDay + "/" + normMonth + "/" + year + " " + desc);
         break;
       }
       case 'NIGHTSHIFT': {
         cls = cls + ' night';
+        desc = getDescription(year, month, content);
         break;
       }
       case 'HOLIDAY': {
@@ -185,17 +190,20 @@ function buildDate(content, month, isAccent = false, status) {
         break;
       }
     }
-	return `<div class="${cls}">${content}</div>`
+    let result = `<div class="${cls}">${content}</div>`
+    if (desc != null && typeof str !== "undefined") {
+       desc = desc.trim();
+    }
+    if(desc) {
+        result = `<div class="${cls}"data-tooltip="${desc}">${content}</div>`
+    }
+	return result
 }
 
 function getStatus(year, month, day) {
-    month = month + 1
-    if(month < 10) {
-        month = '0' + month
-    }
-    if(day < 10) {
-        day = '0' + day
-    }
+
+    day = normalizeDay(day)
+    month = normalizeMonth(month)
     let dateText = year + '-' + month + '-' + day
     let status
 
@@ -203,9 +211,79 @@ function getStatus(year, month, day) {
         let d = shiftObj[key].date
         if (d === dateText){
             status = shiftObj[key].status
-            //console.log(shiftObj[key].name + ' ' + shiftObj[key].date + ' ' + shiftObj[key].status)
         }
     }
 
     return status
 }
+
+function getDescription(year, month, day) {
+    day = normalizeDay(day)
+    month = normalizeMonth(month)
+    let dateText = year + '-' + month + '-' + day
+    let description
+
+    for (let key in shiftObj) {
+       let d = shiftObj[key].date
+       if (d === dateText){
+          description = shiftObj[key].description
+          //console.log(shiftObj[key].name + ' ' + shiftObj[key].date + ' ' + shiftObj[key].status)
+       }
+    }
+
+    return description
+}
+
+function normalizeDay(day) {
+    if(day < 10) {
+      day = '0' + day
+    }
+    return day;
+}
+
+function normalizeMonth(month) {
+    month = month + 1
+    if(month < 10) {
+      month = '0' + month
+    }
+    return month;
+}
+
+let tooltipElem;
+
+    document.onmouseover = function(event) {
+      let target = event.target;
+
+      // если у нас есть подсказка...
+      let tooltipHtml = target.dataset.tooltip;
+      if (!tooltipHtml) return;
+
+      // ...создадим элемент для подсказки
+
+      tooltipElem = document.createElement('div');
+      tooltipElem.className = 'tooltip';
+      tooltipElem.innerHTML = tooltipHtml;
+      document.body.append(tooltipElem);
+
+      // спозиционируем его сверху от аннотируемого элемента (top-center)
+      let coords = target.getBoundingClientRect();
+
+      let left = coords.left + (target.offsetWidth - tooltipElem.offsetWidth) / 2;
+      if (left < 0) left = 0; // не заезжать за левый край окна
+
+      let top = coords.top - tooltipElem.offsetHeight - 5;
+      if (top < 0) { // если подсказка не помещается сверху, то отображать её снизу
+        top = coords.top + target.offsetHeight + 5;
+      }
+
+      tooltipElem.style.left = left + 'px';
+      tooltipElem.style.top = top + 'px';
+    };
+
+    document.onmouseout = function(e) {
+
+      if (tooltipElem) {
+        tooltipElem.remove();
+        tooltipElem = null;
+      }
+};

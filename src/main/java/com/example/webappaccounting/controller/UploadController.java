@@ -51,16 +51,6 @@ public class UploadController {
         return "upload";
     }
 
-   /* @PostMapping("/upload")
-    public String uploadFile(@RequestParam("file")MultipartFile file, Map<String, Object> model) throws IOException {
-        if (file != null) {
-            Path fileNameAndPath = Paths.get(UPLOAD_DIR, file.getOriginalFilename());
-            Files.write(fileNameAndPath, file.getBytes());
-        }
-        model.put("msg", getUploadDirList(UPLOAD_DIR));
-        return "upload";
-    }*/
-
     @PostMapping("/upload")
     public String singleFileUpload(@RequestParam("file") MultipartFile file,
                                    RedirectAttributes redirectAttributes) {

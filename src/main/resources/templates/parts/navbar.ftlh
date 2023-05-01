@@ -27,6 +27,9 @@
       </li>
       <#if user??>
          <li class="nav-item">
+            <a class="nav-link" href="/calendar">Календарь</a>
+         </li>
+         <li class="nav-item">
             <a class="nav-link" href="/user/profile">Профиль</a>
          </li>
       </#if>
