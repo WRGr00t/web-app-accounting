@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
 
 @Service("jpaShiftService")
 @Transactional
@@ -27,5 +28,17 @@ public class ShiftServiceImpl implements ShiftService{
     public void delete(Shift shift) {
         Shift mergeShift = entityManager.merge(shift);
         entityManager.remove(mergeShift);
+    }
+
+    public void saveAll(ArrayList<Shift> shifts) {
+        for (Shift shift : shifts) {
+            save(shift);
+        }
+    }
+
+    public void deleteAll(ArrayList<Shift> shifts) {
+        for (Shift shift : shifts) {
+            delete(shift);
+        }
     }
 }

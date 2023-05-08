@@ -1,12 +1,15 @@
 package com.example.webappaccounting.service;
 
 import com.example.webappaccounting.model.Shift;
+import com.example.webappaccounting.model.ShiftNative;
 import com.example.webappaccounting.model.Status;
 import com.example.webappaccounting.repository.ShiftRepo;
 import com.example.webappaccounting.response.ReportResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -35,15 +38,19 @@ public class ParseHelper {
         this.service = service;
     }
 
-    public Set<Shift> ParseRecordCsv(String filePath) throws IOException {
+    public void ParseRecordCsv(String filePath) throws IOException {
         //Загружаем строки из файла
+        StringBuilder log = new StringBuilder();
         List<String> fileLines = Files.readAllLines(Paths.get(filePath), StandardCharsets.UTF_8);
+        ArrayList<Shift> shiftsFromDB = (ArrayList<Shift>) shiftRepo.findAll();
         String currentMonth = "";
         String currentYear = "";
         String currentType = "";
-        TreeSet<Shift> shifts = new TreeSet<>();
+        ArrayList<Shift> shiftsFromCSV = new ArrayList<>();
+        ArrayList<Shift> shiftsToDB = new ArrayList<>();
 
         for (String fileLine : fileLines) {
+
             if (isNewMonth(fileLine)) {
                 int monthPosition = 3;
                 int yearPosition = 4;
@@ -70,7 +77,6 @@ public class ParseHelper {
                 }
             }
 
-
             if (columnList.size() > 0) {
                 int namePosition = 0;
                 int shiftBeginPosition = 3;
@@ -93,32 +99,105 @@ public class ParseHelper {
                                     currentColumn,
                                     text,
                                     currentType);
-                            if (shiftRepo.findAllByShiftDateAndDescriptionAndNameAndShiftType(
+                            shiftsFromCSV.add(shift);
+                            ArrayList<Shift> listInDB = (ArrayList<Shift>) shiftsFromDB.stream()
+                                    .filter(x -> x.getShiftDate().equals(shift.getShiftDate()))
+                                    .filter(x-> x.getName().equals(shift.getName()))
+                                    .collect(Collectors.toList());
+                            /*Optional<Shift> shiftInDB = shiftRepo.findAllByShiftDateAndName(
+                                    shift.getShiftDate(),
+                                    shift.getName());*/
+                            if (listInDB.isEmpty()) {
+                                //service.save(shift);
+                                shiftsToDB.add(shift);
+                            } else {
+                                Shift shiftForCheck = listInDB.stream().findFirst().get();
+                                if (!shiftForCheck.getDescription().equals(shift.getDescription())) {
+                                    shift.setId(shiftForCheck.getId());
+                                    System.out.println("update shift " + shift);
+                                    log.append(String.format("изменена смена %s", shift))
+                                            .append("\n");
+                                    //service.save(shift);
+                                    shiftsToDB.add(shift);
+                                }
+                            }
+                            /*if (shiftRepo.findAllByShiftDateAndDescriptionAndNameAndShiftType(
                                             shift.getShiftDate(),
                                             shift.getDescription(),
                                             shift.getName(),
                                             shift.getShiftType())
                                     .isEmpty()){
                                 service.save(shift);
-                            }
+                            }*/
                         }
                     }
                 }
             }
         }
+        //System.out.println("Size array shiftFromCSV = " + shiftsFromCSV.size());
+        //System.out.println("Size array shiftsFromDB = " + shiftsFromDB.size());
+        ArrayList<ShiftNative> shiftNativeInDB = (ArrayList<ShiftNative>) shiftsFromDB.stream()
+                .map(shift -> new ShiftNative(
+                        shift.getName(),
+                        shift.getShiftDate(),
+                        shift.getDescription()))
+                .collect(Collectors.toList());
+        ArrayList<ShiftNative> shiftNativeInCSV = (ArrayList<ShiftNative>) shiftsFromCSV.stream()
+                .map(shift -> new ShiftNative(
+                        shift.getName(),
+                        shift.getShiftDate(),
+                        shift.getDescription()))
+                .collect(Collectors.toList());
 
-        /*for (Shift shift : shifts) {
-            if (shiftRepo.findAllByShiftDateAndDescriptionAndName(
-                    shift.getShiftDate(),
-                    shift.getDescription(),
-                    shift.getName())
-                    .isEmpty()) {
-                System.out.println(shift);
-                shiftRepo.save(shift);
-            }
-        }*/
+        List<ShiftNative> differences = shiftNativeInDB.stream()
+                .filter(element -> !shiftNativeInCSV.contains(element))
+                .collect(Collectors.toList());
 
-        return shifts;
+        ArrayList<Shift> differ = new ArrayList<>();
+        for (ShiftNative diff : differences) {
+            Optional<Shift> optionalShift = shiftRepo.findAllByNameAndShiftDateAndDescription(
+                    diff.getName(),
+                    diff.getShiftDate(),
+                    diff.getDescription());
+            optionalShift.ifPresent(differ::add);
+        }
+        String pathToFile =
+                //"src/main/java/com/example/webappaccounting/upload/load.log";
+        "/root/tmp/upload/load.log";
+        for (ShiftNative shift: differences) {
+            log.append(String.format("изменена (удалена) смена %s", shift))
+                    .append("\n");
+        }
+
+        try {
+            recordLog(pathToFile, log.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(log);
+        service.deleteAll(differ);
+        service.saveAll(shiftsToDB);
+
+    }
+
+    private void recordLog(String pathToFile, String log) throws IOException {
+        LocalDateTime now = LocalDateTime.now();
+        File file = new File(pathToFile);
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String logDateTime = now.format(formatter);
+        log = String.format("%s %s", logDateTime, log);
+        try(FileWriter writer = new FileWriter(pathToFile, true))
+        {
+            writer.write(log);
+            writer.append('\n');
+            writer.flush();
+        }
+        catch(IOException ex){
+            System.out.println(ex.getMessage());
+        }
     }
 
     private static boolean isFindNewMonth(String line) {
