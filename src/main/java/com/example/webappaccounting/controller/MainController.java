@@ -203,7 +203,7 @@ public class MainController {
 
         model.put("persons", persons);
 
-        ArrayList<PersonalResponse> responses = new ArrayList<>();
+        TreeSet<PersonalResponse> responses = new TreeSet<>();
 
         ArrayList<Shift> shifts = (ArrayList<Shift>) shiftRepo.findAllByNameAndShiftDateBetween(
                 person,
