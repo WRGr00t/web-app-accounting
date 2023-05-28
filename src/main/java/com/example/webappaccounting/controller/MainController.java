@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.TextStyle;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Controller
 public class MainController {
@@ -191,6 +192,9 @@ public class MainController {
         HashSet<String> persons = (HashSet<String>) helper.getNameInRangeWithout85(
                 startDay.minusMonths(2),
                 endDay.plusMonths(2));
+        ArrayList<String> names = (ArrayList<String>) persons.stream()
+                .sorted()
+                .collect(Collectors.toList());
 
         startRange = shiftRepo.findMinimum();
         endRange = shiftRepo.findMaximum();
@@ -201,7 +205,7 @@ public class MainController {
         model.put("dateStart", startDay);
         model.put("dateEnd", endDay);
 
-        model.put("persons", persons);
+        model.put("persons", names);
 
         TreeSet<PersonalResponse> responses = new TreeSet<>();
 
