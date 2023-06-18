@@ -426,6 +426,11 @@ public class ParseHelper {
                 result = Status.SICKDAY;
                 break;
             }
+            case "У":
+            case "УВ":{
+                result = Status.DISMISSAL;
+                break;
+            }
         }
         return result;
     }
