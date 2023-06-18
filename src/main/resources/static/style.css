@@ -45,7 +45,7 @@ body {
   border-radius: 50%;
   line-height: 10em;
   text-align: center;
-  background: mistyrose;
+  background: MistyRose;
 }
 
 .night {
@@ -76,6 +76,16 @@ body {
   line-height: 10em;
   text-align: center;
   background: MediumVioletRed;
+}
+
+.dismissal {
+  text-shadow: 1px 1px 1px #fff;
+  width: 10em;
+  height: 10em;
+  border-radius: 50%;
+  line-height: 10em;
+  text-align: center;
+  background: LightCoral;
 }
 
 .month_name {

@@ -4,5 +4,6 @@ public enum Status {
     DAYSHIFT,
     NIGHTSHIFT,
     HOLIDAY,
-    SICKDAY
+    SICKDAY,
+    DISMISSAL
 }
