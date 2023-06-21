@@ -217,7 +217,8 @@ public class MainController {
             if (helper.isShiftTime(shift.getDescription())) {
                 PersonalResponse response = new PersonalResponse();
                 LocalDate day = shift.getShiftDate();
-                response.setDate(day);
+                String date = String.format("%td.%tm.%tY", day, day, day);
+                response.setDate(date);
                 Locale localeRu = new Locale("ru", "RU");
                 response.setDayOfWeek(day.getDayOfWeek()
                         .getDisplayName(TextStyle.FULL, localeRu));

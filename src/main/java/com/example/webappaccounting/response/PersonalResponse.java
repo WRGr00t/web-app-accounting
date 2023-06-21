@@ -3,7 +3,7 @@ package com.example.webappaccounting.response;
 import java.time.LocalDate;
 
 public class PersonalResponse implements Comparable<PersonalResponse>{
-    private LocalDate date;
+    private String date;
     private String dayOfWeek;
 
     private String description;
@@ -11,11 +11,11 @@ public class PersonalResponse implements Comparable<PersonalResponse>{
     public PersonalResponse() {
     }
 
-    public LocalDate getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
