@@ -45,7 +45,8 @@ public class MainController {
                        Map<String, Object> model) {
         Iterable<Shift> shiftIterable = shiftRepo.findAll();
 
-        ArrayList<Shift> list = new ArrayList<>();
+        ArrayList<Shift> dayShift = new ArrayList<>();
+        ArrayList<Shift> shift52 = new ArrayList<>();
         ArrayList<Shift> nightShift = new ArrayList<>();
         helper = new ParseHelper(shiftRepo, service);
 
@@ -57,11 +58,14 @@ public class MainController {
                     helper.isShiftTime(s.getDescription())) {
                 if (helper.isNightShift(s)) {
                     nightShift.add(s);
+                } else if (s.getShiftType().equals("8*5")) {
+                    shift52.add(s);
                 } else {
-                    list.add(s);
+                    dayShift.add(s);
                 }
             }
         }
+        Collections.sort(dayShift);
         LocalDate localDate = requestDate.toLocalDate();
         LocalDate today = LocalDate.now();
         startRange = shiftRepo.findMinimum();
@@ -70,7 +74,8 @@ public class MainController {
         model.put("endYear", endRange);
         model.put("today", today);
         model.put("date", localDate);
-        model.put("repos", list);
+        model.put("offices", shift52);
+        model.put("days", dayShift);
         model.put("nights", nightShift);
 
         return "inshift";
@@ -155,7 +160,9 @@ public class MainController {
                     }
                 }
             }
-            response.setDate(day);
+
+            String date = String.format("%td.%tm.%tY", day, day, day);
+            response.setDate(date);
             Locale localeRu = new Locale("ru", "RU");
             response.setDayOfWeek(day.getDayOfWeek()
                     .getDisplayName(TextStyle.FULL, localeRu));

@@ -23,13 +23,23 @@
        </tr>
    </thead>
    <tr scope="row">
+           <td colspan="3"><b>Рабочая неделя 5/2</b></td>
+      </tr>
+   <#list offices as office>
+       <tr scope="row">
+           <td>${office.name}</td>
+           <td><i>${office.description}</i></td>
+           <td>${office.shiftType}</td>
+       </tr>
+   </#list>
+   <tr scope="row">
         <td colspan="3"><b>Дневная смена</b></td>
    </tr>
-<#list repos as repo>
+<#list days as day>
     <tr scope="row">
-        <td>${repo.name}</td>
-        <td><i>${repo.description}</i></td>
-        <td>${repo.shiftType}</td>
+        <td>${day.name}</td>
+        <td><i>${day.description}</i></td>
+        <td>${day.shiftType}</td>
     </tr>
 </#list>
     <tr scope="row">

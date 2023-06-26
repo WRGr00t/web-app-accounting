@@ -109,9 +109,12 @@ public class Shift implements Comparable<Shift>{
     public int compareTo(Shift o) {
         int result = this.shiftDate.compareTo(o.shiftDate);
         if (result == 0) {
-            result = this.description.compareTo(o.description);
+            result = this.shiftType.compareTo(o.getShiftType());
             if (result == 0) {
-                result = this.name.compareTo(o.name);
+                result = this.description.compareTo(o.description);
+                if (result == 0) {
+                    result = this.name.compareTo(o.name);
+                }
             }
         }
         return result;

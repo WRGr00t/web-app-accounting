@@ -3,7 +3,7 @@ package com.example.webappaccounting.response;
 import java.time.LocalDate;
 
 public class ShiftResponse {
-    private LocalDate date;
+    private String date;
     private String dayOfWeek;
     private int dayShiftCount;
     private int nightShiftCount;
@@ -11,11 +11,11 @@ public class ShiftResponse {
     public ShiftResponse() {
     }
 
-    public LocalDate getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
