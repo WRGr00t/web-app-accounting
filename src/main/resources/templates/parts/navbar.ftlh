@@ -13,33 +13,40 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="/inshift">Список смены</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/forpersonal">Ближайшие смены</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/inmonth">Анализ месяца</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/distrib">Распределение</a>
-      </li>
-      <#if user??>
-         <li class="nav-item">
-            <a class="nav-link" href="/calendar">Календарь</a>
-         </li>
+        <#if user??>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Сотруднику
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                  <a class="dropdown-item" href="/inshift">Список смены</a>
+                  <a class="dropdown-item" href="/forpersonal">Ближайшие смены</a>
+                  <a class="dropdown-item" href="/calendar">Календарь</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Руководителю
+                  </a>
+                  <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                       <a class="dropdown-item" href="/inmonth">Анализ месяца</a>
+                       <a class="dropdown-item" href="/distrib">Распределение</a>
+                  </div>
+            </li>
          <li class="nav-item">
             <a class="nav-link" href="/user/profile">Профиль</a>
          </li>
       </#if>
       <#if isAdmin>
-      <li class="nav-item">
-        <a class="nav-link" href="/user">Пользователи</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/upload">Загрузить</a>
-      </li>
+        <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                   Админу
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                  <a class="dropdown-item" href="/user">Пользователи</a>
+                  <a class="dropdown-item" href="/upload">Загрузить</a>
+              </div>
+        </li>
       </#if>
     </ul>
     <div class="navbar-text mr-3">

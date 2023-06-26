@@ -8,6 +8,15 @@ body {
 	font-family: 'Montserrat', sans-serif;
 }
 
+.container {
+  width: 100%;
+  height: 100vh;
+  color: #eee;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .head {
 	background: linear-gradient(to right, #FF621F, #AC25FF);
 	background-clip: text;
@@ -35,7 +44,7 @@ body {
 	font-weight: 900;
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
-	grid-gap: 32px;
+	grid-gap: 50px;
 }
 
 .day {
