@@ -19,38 +19,32 @@ const months = [
 		{name: 'Декабрь'},
 	]
 
-	//let employee = ''
 	let shiftDates = []
 	let shiftObj = []
 
 function getPerson(name) {
 
     dom.person.innerHTML = name
-    //employee = name
 
     getShiftObjs(name).then(function(value)
         {
             shiftObj = value
-        /*})
-
-    getShifts(name).then(function(value)
-        {
-            shiftDates = value*/
             renderCalendar(year)
         })
     }
 
 function getShiftObjs(name) {
-    let requestURL = "/api/bynameandmonth?name=" + name + "&year=" + year
+    let requestURL = "/api/bynameandmonth?name=" + name + "&year=" + year;
     return fetch(requestURL)
         .then((result) => result.json())
 }
 
-function getShifts(name) {
+/*function getShifts(name) {
     let requestURL = "/api/byname?name=" + name + "&year=" + year
+    console.log(requestURL)
     return fetch(requestURL)
     .then((result) => result.json())
-}
+}*/
 
 const year = new Date().getFullYear()
 dom.year.innerHTML = year
@@ -117,7 +111,6 @@ function buildWeekDaysNames() {
     return false
 }*/
 function isShift(year, month, day) {
-    month = month + 1
         if(month < 10) {
             month = '0' + month
         }
@@ -137,7 +130,6 @@ function isShift(year, month, day) {
 }
 
 function buildDates(year, month) {
-
 	const date = new Date(year, month, 1)
 	const datesHTML = []
 	const weekDayStart = date.getDay()
@@ -147,17 +139,14 @@ function buildDates(year, month) {
 	while (day < daysCount + 1) {
 		let dateHTML;
 		if (weekDayStart > i || (weekDayStart == 0 && i < 7)) {
-			dateHTML = buildDate('')
-			i++
+			dateHTML = buildDate('');
+			i++;
 		}
 		else {
-		    let status = getStatus(year, month, day)
-			if ((i + day) % 7 == 0 || (i + day) % 7 == 1) {
-				dateHTML = buildDate(day, month, true, status)
-			} else {
-				dateHTML = buildDate(day, month, false, status)
-			}
-			day++
+		    let status = getStatus(year, month, day);
+		    let isWeekend = (i + day) % 7 == 0 || (i + day) % 7 == 1;
+			dateHTML = buildDate(day, month, isWeekend, status);
+			day++;
 		}
 		datesHTML.push(dateHTML)
 	}
@@ -165,15 +154,14 @@ function buildDates(year, month) {
 }
 
 function buildDate(content, month, isAccent = false, status) {
-	let cls = isAccent ? 'month_date month_date_accent' : 'month_date'
-    let desc = ""
+	let cls = isAccent ? 'month_date month_date_accent' : 'month_date';
+    let desc = "";
+    month = month + 1;
     switch (status) {
       case 'DAYSHIFT': {
         cls = cls + ' day';
-        //let normMonth = normalizeMonth(month);
-        //let normDay = normalizeDay(content);
         desc = getDescription(year, month, content);
-        //console.log(normDay + "/" + normMonth + "/" + year + " " + desc);
+        console.log (year + '.' + month + '.' + content + ' - ' + desc);
         break;
       }
       case 'NIGHTSHIFT': {
@@ -194,63 +182,55 @@ function buildDate(content, month, isAccent = false, status) {
               break;
             }
     }
-    let result = `<div class="${cls}">${content}</div>`
+    let result = `<div class="${cls}">${content}</div>`;
     if (desc != null && typeof str !== "undefined") {
        desc = desc.trim();
     }
-    if(desc) {
-        result = `<div class="${cls}"data-tooltip="${desc}">${content}</div>`
+    if (desc) {
+        result = `<div class="${cls}"data-tooltip="${desc}">${content}</div>`;
+        //console.log(content + '.' + month + ' - ' + desc);
     }
-	return result
+	return result;
 }
 
 function getStatus(year, month, day) {
 
-    day = normalizeDay(day)
-    month = normalizeMonth(month)
-    let dateText = year + '-' + month + '-' + day
-    let status
+    month = month + 1;
+    day = normalize(day);
+    month = normalize(month);
+    let dateText = year + '-' + month + '-' + day;
+    let status;
 
     for (let key in shiftObj) {
-        let d = shiftObj[key].date
+        let d = shiftObj[key].date;
         if (d === dateText){
-            status = shiftObj[key].status
+            status = shiftObj[key].status;
         }
     }
 
-    return status
+    return status;
 }
 
 function getDescription(year, month, day) {
-    day = normalizeDay(day)
-    month = normalizeMonth(month)
-    let dateText = year + '-' + month + '-' + day
-    let description
+    day = normalize(day);
+    month = normalize(month);
+    let dateText = year + '-' + month + '-' + day;
+    let description;
 
     for (let key in shiftObj) {
-       let d = shiftObj[key].date
+       let d = shiftObj[key].date;
        if (d === dateText){
-          description = shiftObj[key].description
-          //console.log(shiftObj[key].name + ' ' + shiftObj[key].date + ' ' + shiftObj[key].status)
+          description = shiftObj[key].description;
        }
     }
-
-    return description
+    return description;
 }
 
-function normalizeDay(day) {
-    if(day < 10) {
-      day = '0' + day
+function normalize(string) {
+    if(string < 10) {
+      string = '0' + string
     }
-    return day;
-}
-
-function normalizeMonth(month) {
-    month = month + 1
-    if(month < 10) {
-      month = '0' + month
-    }
-    return month;
+    return string;
 }
 
 let tooltipElem;

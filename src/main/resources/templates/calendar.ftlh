@@ -10,7 +10,7 @@
 
 </head>
 <body>
-
+<div class="container-fluid">
     <div class="head">
         <div>
             <a href="/">Назад</a>
@@ -32,7 +32,6 @@
             </div>
         </form>
     </div>
-<div class="container">
 
     <div id="calendar" class="calendar">
 

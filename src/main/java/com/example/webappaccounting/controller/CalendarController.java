@@ -45,4 +45,26 @@ public class CalendarController {
         model.put("persons", names);
         return "calendar";
     }
+
+    @GetMapping("monthcalendar")
+    public String GetMonthCalendar(@RequestParam(name="person", required=false) String person,
+                              Map<String, Object> model){
+
+        if (person == null) {
+            person = "";
+        }
+        model.put("select", person);
+
+        LocalDate startDay = LocalDate.of(LocalDate.now().getYear(), 1, 1);
+        LocalDate endDay = LocalDate.of(LocalDate.now().getYear(), 12, 31);
+        ParseHelper helper = new ParseHelper(shiftRepo, service);
+        HashSet<String> persons = (HashSet<String>) helper.getNameInRangeWithout85(startDay, endDay);
+
+        ArrayList<String> names = (ArrayList<String>) persons.stream()
+                .sorted()
+                .collect(Collectors.toList());
+
+        model.put("persons", names);
+        return "monthcalendar";
+    }
 }

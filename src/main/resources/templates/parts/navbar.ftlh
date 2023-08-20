@@ -21,7 +21,8 @@
                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                   <a class="dropdown-item" href="/inshift">Список смены</a>
                   <a class="dropdown-item" href="/forpersonal">Ближайшие смены</a>
-                  <a class="dropdown-item" href="/calendar">Календарь</a>
+                  <a class="dropdown-item" href="/calendar">Календарь на год</a>
+                  <#-- <a class="dropdown-item" href="/monthcalendar">Календарь на месяц</a> -->
                 </div>
             </li>
             <li class="nav-item dropdown">
