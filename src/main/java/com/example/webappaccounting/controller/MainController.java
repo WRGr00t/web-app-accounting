@@ -11,8 +11,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,6 +36,7 @@ public class MainController {
 
     private ParseHelper helper ;
 
+    //private static String UPLOAD_DIR = "src/main/java/com/example/webappaccounting/upload/";
     @Value("${upload.path}")
     private String UPLOAD_DIR;
 
@@ -34,9 +44,18 @@ public class MainController {
     private LocalDate endRange;
 
     @GetMapping("/")
-    public String home(Map<String, Object> model){
-        LocalDate day = LocalDate.now();
-        model.put("today", day);
+    public String home(Map<String, Object> model) throws IOException {
+
+        DateTimeFormatter dft = DateTimeFormatter
+                .ofPattern("dd.MM.yyyy, HH:mm:ss");
+        File f = new File(UPLOAD_DIR + "load.log");
+        Path p = f.toPath();
+
+        BasicFileAttributes attr = Files.readAttributes(p, BasicFileAttributes.class);
+        FileTime fileTime = attr.lastModifiedTime();
+        LocalDateTime localDateTime = fileTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        String date = localDateTime.format(dft);
+        model.put("date", date);
         return "home";
     }
 
