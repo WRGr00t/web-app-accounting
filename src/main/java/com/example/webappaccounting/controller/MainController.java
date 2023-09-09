@@ -252,10 +252,8 @@ public class MainController {
 
                 responses.add(response);
             }
-
         }
         model.put("repos", responses);
-
         return "forpersonal";
     }
 }
