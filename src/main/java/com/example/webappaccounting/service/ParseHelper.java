@@ -104,38 +104,37 @@ public class ParseHelper {
                                     .filter(x -> x.getShiftDate().equals(shift.getShiftDate()))
                                     .filter(x-> x.getName().equals(shift.getName()))
                                     .collect(Collectors.toList());
-                            /*Optional<Shift> shiftInDB = shiftRepo.findAllByShiftDateAndName(
-                                    shift.getShiftDate(),
-                                    shift.getName());*/
+
                             if (listInDB.isEmpty()) {
-                                //service.save(shift);
+                                log.append(String.format("добавлена смена %s",
+                                                new ShiftNative(
+                                                        shift.getName(),
+                                                        shift.getShiftDate(),
+                                                        shift.getDescription())
+                                                )
+                                            )
+                                        .append("\n");
                                 shiftsToDB.add(shift);
                             } else {
                                 Shift shiftForCheck = listInDB.stream().findFirst().get();
                                 if (!shiftForCheck.getDescription().equals(shift.getDescription())) {
                                     shift.setId(shiftForCheck.getId());
-                                    System.out.println("update shift " + shift);
-                                    log.append(String.format("изменена смена %s", shift))
+                                    log.append(String.format("изменена смена %s",
+                                                    new ShiftNative(
+                                                            shift.getName(),
+                                                            shift.getShiftDate(),
+                                                            shift.getDescription())
+                                                    )
+                                                )
                                             .append("\n");
-                                    //service.save(shift);
                                     shiftsToDB.add(shift);
                                 }
                             }
-                            /*if (shiftRepo.findAllByShiftDateAndDescriptionAndNameAndShiftType(
-                                            shift.getShiftDate(),
-                                            shift.getDescription(),
-                                            shift.getName(),
-                                            shift.getShiftType())
-                                    .isEmpty()){
-                                service.save(shift);
-                            }*/
                         }
                     }
                 }
             }
         }
-        //System.out.println("Size array shiftFromCSV = " + shiftsFromCSV.size());
-        //System.out.println("Size array shiftsFromDB = " + shiftsFromDB.size());
         ArrayList<ShiftNative> shiftNativeInDB = (ArrayList<ShiftNative>) shiftsFromDB.stream()
                 .map(shift -> new ShiftNative(
                         shift.getName(),
@@ -165,7 +164,7 @@ public class ParseHelper {
                 //"src/main/java/com/example/webappaccounting/upload/load.log";
         "/root/tmp/upload/load.log";
         for (ShiftNative shift: differences) {
-            log.append(String.format("изменена (удалена) смена %s", shift))
+            log.append(String.format("удалена смена %s", shift))
                     .append("\n");
         }
 
@@ -174,7 +173,7 @@ public class ParseHelper {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(log);
+        //System.out.println(log);
         service.deleteAll(differ);
         service.saveAll(shiftsToDB);
 
@@ -188,7 +187,7 @@ public class ParseHelper {
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String logDateTime = now.format(formatter);
-        log = String.format("%s %s", logDateTime, log);
+        log = String.format("%s\n%s", logDateTime, log);
         try(FileWriter writer = new FileWriter(pathToFile, true))
         {
             writer.write(log);
