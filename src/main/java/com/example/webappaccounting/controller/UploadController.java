@@ -29,6 +29,9 @@ public class UploadController {
 
     @Autowired
     private ShiftServiceImpl service;
+
+    @Autowired
+    private ParseHelper parseHelper;
     //private static String UPLOAD_DIR = "src/main/java/com/example/webappaccounting/upload";
     @Value("${upload.path}")
     private String UPLOAD_DIR;
@@ -70,8 +73,8 @@ public class UploadController {
             redirectAttributes.addFlashAttribute("message",
                     "Успешно загружен файл '" + file.getOriginalFilename() + "'");
             //shiftRepo.deleteAll();
-            ParseHelper helper = new ParseHelper(shiftRepo, service);
-            helper.ParseRecordCsv(path.toString());
+
+            parseHelper.ParseRecordCsv(path.toString());
             logger.debug("загружен файл");
 
         } catch (IOException e) {

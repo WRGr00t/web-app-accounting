@@ -34,7 +34,8 @@ public class MainController {
     @Autowired
     private ShiftServiceImpl service;
 
-    private ParseHelper helper ;
+    @Autowired
+    private ParseHelper helper;
 
     //private static String UPLOAD_DIR = "src/main/java/com/example/webappaccounting/upload/";
     @Value("${upload.path}")
@@ -67,7 +68,6 @@ public class MainController {
         ArrayList<Shift> dayShift = new ArrayList<>();
         ArrayList<Shift> shift52 = new ArrayList<>();
         ArrayList<Shift> nightShift = new ArrayList<>();
-        helper = new ParseHelper(shiftRepo, service);
 
         LocalDateTime requestDate = helper.StringToLocalDateTime(date);
 
@@ -110,7 +110,6 @@ public class MainController {
             start = String.valueOf(initial.withDayOfMonth(1));
             end = String.valueOf(initial.withDayOfMonth(initial.lengthOfMonth()));
         }
-        helper = new ParseHelper(shiftRepo, service);
 
         LocalDate startDay = helper.getDateFromString(start);
         LocalDate endDay = helper.getDateFromString(end);
@@ -147,7 +146,6 @@ public class MainController {
             start = LocalDate.now().toString();
             end = LocalDate.now().plusWeeks(1).toString();
         }
-        helper = new ParseHelper(shiftRepo, service);
 
         LocalDate startDay = helper.getDateFromString(start);
         LocalDate endDay = helper.getDateFromString(end);
@@ -209,8 +207,6 @@ public class MainController {
             person = "";
         }
         model.put("select", person);
-
-        helper = new ParseHelper(shiftRepo, service);
 
         LocalDate startDay = helper.getDateFromString(start);
         LocalDate endDay = helper.getDateFromString(end);

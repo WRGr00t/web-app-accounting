@@ -45,6 +45,7 @@
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                   <a class="dropdown-item" href="/user">Пользователи</a>
+                  <a class="dropdown-item" href="/subscribe">Рассылки</a>
                   <a class="dropdown-item" href="/upload">Загрузить</a>
               </div>
         </li>

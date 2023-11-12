@@ -24,6 +24,9 @@ public class CalendarController {
     @Autowired
     private ShiftServiceImpl service;
 
+    @Autowired
+    private ParseHelper parseHelper;
+
     @GetMapping("calendar")
     public String GetCalendar(@RequestParam(name="person", required=false) String person,
                               Map<String, Object> model){
@@ -35,8 +38,8 @@ public class CalendarController {
 
         LocalDate startDay = LocalDate.of(LocalDate.now().getYear(), 1, 1);
         LocalDate endDay = LocalDate.of(LocalDate.now().getYear(), 12, 31);
-        ParseHelper helper = new ParseHelper(shiftRepo, service);
-        HashSet<String> persons = (HashSet<String>) helper.getNameInRangeWithout85(startDay, endDay);
+
+        HashSet<String> persons = (HashSet<String>) parseHelper.getNameInRangeWithout85(startDay, endDay);
 
         ArrayList<String> names = (ArrayList<String>) persons.stream()
                 .sorted()
@@ -57,8 +60,7 @@ public class CalendarController {
 
         LocalDate startDay = LocalDate.of(LocalDate.now().getYear(), 1, 1);
         LocalDate endDay = LocalDate.of(LocalDate.now().getYear(), 12, 31);
-        ParseHelper helper = new ParseHelper(shiftRepo, service);
-        HashSet<String> persons = (HashSet<String>) helper.getNameInRangeWithout85(startDay, endDay);
+        HashSet<String> persons = (HashSet<String>) parseHelper.getNameInRangeWithout85(startDay, endDay);
 
         ArrayList<String> names = (ArrayList<String>) persons.stream()
                 .sorted()

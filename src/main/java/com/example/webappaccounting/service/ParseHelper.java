@@ -3,10 +3,12 @@ package com.example.webappaccounting.service;
 import com.example.webappaccounting.model.Shift;
 import com.example.webappaccounting.model.ShiftNative;
 import com.example.webappaccounting.model.Status;
+import com.example.webappaccounting.model.Subscribe;
 import com.example.webappaccounting.repository.ShiftRepo;
+import com.example.webappaccounting.repository.SubscribeRepo;
 import com.example.webappaccounting.response.ReportResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -22,6 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@Service
 public class ParseHelper {
 
     @Autowired
@@ -30,19 +33,26 @@ public class ParseHelper {
     @Autowired
     private ShiftServiceImpl service;
 
-    @Value("${upload.path}")
-    private String UPLOAD_DIR;
+    /*@Autowired
+    private EmailSenderService senderService;*/
 
-    public ParseHelper(ShiftRepo shiftRepo, ShiftServiceImpl service) {
-        this.shiftRepo = shiftRepo;
-        this.service = service;
+    private HashMap<String, ArrayList<String>> changeForSender = new HashMap<>();
+
+    @Autowired
+    private SubscribeService subscribeService;
+
+    public ParseHelper() {
     }
 
     public void ParseRecordCsv(String filePath) throws IOException {
         //Загружаем строки из файла
+
         StringBuilder log = new StringBuilder();
         List<String> fileLines = Files.readAllLines(Paths.get(filePath), StandardCharsets.UTF_8);
         ArrayList<Shift> shiftsFromDB = (ArrayList<Shift>) shiftRepo.findAll();
+        ArrayList<String> subscribeNames = (ArrayList<String>) subscribeService.findAll().stream()
+                .map(Subscribe::getUsername)
+                .collect(Collectors.toList());
         String currentMonth = "";
         String currentYear = "";
         String currentType = "";
@@ -106,26 +116,33 @@ public class ParseHelper {
                                     .collect(Collectors.toList());
 
                             if (listInDB.isEmpty()) {
-                                log.append(String.format("добавлена смена %s",
-                                                new ShiftNative(
-                                                        shift.getName(),
-                                                        shift.getShiftDate(),
-                                                        shift.getDescription())
-                                                )
-                                            )
+                                String newShift = String.format("добавлена смена %s",
+                                        new ShiftNative(
+                                                shift.getName(),
+                                                shift.getShiftDate(),
+                                                shift.getDescription())
+                                );
+                                if (subscribeNames.contains(shift.getName())) {
+                                    putToChangeForSubscribe(shift.getName(), newShift);
+                                }
+
+                                log.append(newShift)
                                         .append("\n");
                                 shiftsToDB.add(shift);
                             } else {
                                 Shift shiftForCheck = listInDB.stream().findFirst().get();
                                 if (!shiftForCheck.getDescription().equals(shift.getDescription())) {
                                     shift.setId(shiftForCheck.getId());
-                                    log.append(String.format("изменена смена %s",
-                                                    new ShiftNative(
-                                                            shift.getName(),
-                                                            shift.getShiftDate(),
-                                                            shift.getDescription())
-                                                    )
-                                                )
+                                    String changeShift = String.format("изменена смена %s",
+                                            new ShiftNative(
+                                                    shift.getName(),
+                                                    shift.getShiftDate(),
+                                                    shift.getDescription())
+                                                );
+                                    if (subscribeNames.contains(shift.getName())) {
+                                        putToChangeForSubscribe(shift.getName(), changeShift);
+                                    }
+                                    log.append(changeShift)
                                             .append("\n");
                                     shiftsToDB.add(shift);
                                 }
@@ -161,19 +178,30 @@ public class ParseHelper {
             optionalShift.ifPresent(differ::add);
         }
         String pathToFile =
-                //"src/main/java/com/example/webappaccounting/upload/load.log";
-        "/root/tmp/upload/load.log";
+                "src/main/java/com/example/webappaccounting/upload/load.log";
+        //"/root/tmp/upload/load.log";
+
         for (ShiftNative shift: differences) {
-            log.append(String.format("удалена смена %s", shift))
+            String deleteShift = String.format("удалена смена %s", shift);
+            if (subscribeNames.contains(shift.getName())) {
+                putToChangeForSubscribe(shift.getName(), deleteShift);
+            }
+            log.append(deleteShift)
                     .append("\n");
         }
-
-        try {
-            recordLog(pathToFile, log.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
+        String resultLog = log.toString();
+        System.out.println(resultLog);
+        if (!resultLog.isEmpty()) {
+            sendMail();
+            try {
+                recordLog(pathToFile, resultLog);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("No change");
         }
-        //System.out.println(log);
+
         service.deleteAll(differ);
         service.saveAll(shiftsToDB);
 
@@ -432,5 +460,47 @@ public class ParseHelper {
             }
         }
         return result;
+    }
+
+    private void sendMail() {
+
+        for (String key : changeForSender.keySet()) {
+            ArrayList<String> emails = getEmailsForName(key);
+            StringBuilder builder = new StringBuilder();
+            ArrayList<String> changes = changeForSender.get(key);
+            for (String change : changes) {
+                builder.append(change)
+                        .append("/n");
+            }
+            for (String email : emails) {
+                //senderService.sendSimpleEmail(email, "Изменения в графике", builder.toString());
+            }
+        }
+    }
+
+    private ArrayList<String> getEmailsForName(String name) {
+        ArrayList<Subscribe> subscribes = subscribeService.findAllMailByUsername(name);
+        return (ArrayList<String>) subscribes.stream()
+                .map(Subscribe::getEmail)
+                .collect(Collectors.toList());
+    }
+
+    public boolean patternMatches(String emailAddress) {
+        String regexPattern =
+                //"^[A-Za-z0-9+_.-]+@(.+)$";
+        "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        return Pattern.compile(regexPattern)
+                .matcher(emailAddress)
+                .matches();
+    }
+
+    private void putToChangeForSubscribe (String subscribeName, String change) {
+        if (changeForSender.containsKey(subscribeName)) {
+            ArrayList<String> payloads = changeForSender.get(subscribeName);
+            payloads.add(change);
+            changeForSender.replace(subscribeName, payloads);
+        } else {
+            changeForSender.put(subscribeName, new ArrayList<>(List.of(change)));
+        }
     }
 }

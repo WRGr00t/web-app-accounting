@@ -24,17 +24,18 @@ public class ApiController {
     ShiftRepo shiftRepo;
     @Autowired
     ShiftServiceImpl service;
+    @Autowired
+    ParseHelper parseHelper;
 
     @GetMapping
     public String list() {
         ArrayList<Shift> shiftIterable = (ArrayList<Shift>) shiftRepo.findAllByShiftDate(LocalDate.now());
 
-        ParseHelper helper = new ParseHelper(shiftRepo, service);
         StringBuilder dayShift = new StringBuilder();
         StringBuilder nigthShift = new StringBuilder();
         for (Shift s : shiftIterable) {
-            if (helper.isShiftTime(s.getDescription()) && !s.getShiftType().equals("8*5")) {
-                if (helper.isNightShift(s)) {
+            if (parseHelper.isShiftTime(s.getDescription()) && !s.getShiftType().equals("8*5")) {
+                if (parseHelper.isNightShift(s)) {
                     nigthShift.append(s.getName())
                             .append("\n");
                 } else {
@@ -65,10 +66,9 @@ public class ApiController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         formatter = formatter.withLocale(Locale.forLanguageTag("ru-RU"));
         LocalDate localDate = LocalDate.parse(date, formatter);
-        ParseHelper helper = new ParseHelper(shiftRepo, service);
         Shift shift = shiftRepo.findOneByNameAndShiftDate(name, localDate);
         if (shift != null) {
-            result = helper.isNightShift(shift);
+            result = parseHelper.isNightShift(shift);
         } else {
             result = false;
         }
@@ -93,12 +93,12 @@ public class ApiController {
                     LocalDate.of(year, 1, 1),
                     LocalDate.of(year, 12, 31));
         }
-        ParseHelper helper = new ParseHelper(shiftRepo, service);
+
         return (ArrayList<CalendarResponse>) list.stream()
                 .map(x -> new CalendarResponse(
                         x.getName(),
                         x.getShiftDate(),
-                        helper.getStatus(x),
+                        parseHelper.getStatus(x),
                         x.getDescription()))
                 .collect(Collectors.toList());
     }
