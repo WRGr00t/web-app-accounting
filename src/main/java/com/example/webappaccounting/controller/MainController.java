@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.time.LocalDate;
@@ -25,6 +26,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @org.springframework.stereotype.Controller
 public class MainController {
@@ -251,5 +253,18 @@ public class MainController {
         }
         model.put("repos", responses);
         return "forpersonal";
+    }
+
+    @GetMapping("/news")
+    public String getNews(Map<String, Object> model) throws IOException {
+
+        String pathToLog = UPLOAD_DIR + "load.log";
+        Path path = Paths.get(pathToLog);
+        ArrayList<String> read = (ArrayList<String>) Files.readAllLines(path);
+        model.put("messages", IntStream.rangeClosed(1, read.size())
+                .mapToObj(i -> read.get(read.size() - i))
+                .limit(200)
+                .toArray());
+        return "news";
     }
 }

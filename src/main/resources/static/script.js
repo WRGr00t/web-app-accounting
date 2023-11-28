@@ -19,21 +19,24 @@ const months = [
 		{name: 'Декабрь'},
 	]
 
-	let shiftDates = []
-	let shiftObj = []
+	let shiftDates = [];
+	let shiftObj = [];
+	let currentPerson = '';
 
 function getPerson(name) {
 
     dom.person.innerHTML = name
+    currentPerson = name;
 
     getShiftObjs(name).then(function(value)
         {
-            shiftObj = value
-            renderCalendar(year)
+            shiftObj = value;
+            renderCalendar(year);
         })
     }
 
 function getShiftObjs(name) {
+    console.log(name);
     let requestURL = "/api/bynameandmonth?name=" + name + "&year=" + year;
     return fetch(requestURL)
         .then((result) => result.json())
@@ -46,8 +49,24 @@ function getShiftObjs(name) {
     .then((result) => result.json())
 }*/
 
-const year = new Date().getFullYear()
+let year = new Date().getFullYear()
 dom.year.innerHTML = year
+
+document.querySelector(".prev").addEventListener("click", () => {
+      year = year - 1;
+      dom.year.innerHTML = year;
+      dom.person.innerHTML = currentPerson;
+      getShiftObjs(currentPerson);
+      getPerson(currentPerson);
+    });
+
+    document.querySelector(".next").addEventListener("click", () => {
+      year = year + 1;
+      dom.year.innerHTML = year;
+      dom.person.innerHTML = currentPerson;
+      getShiftObjs(currentPerson);
+      getPerson(currentPerson);
+    });
 
 function renderCalendar(year) {
 //удаление календаря предыдущего сотрудника
@@ -161,7 +180,7 @@ function buildDate(content, month, isAccent = false, status) {
       case 'DAYSHIFT': {
         cls = cls + ' day';
         desc = getDescription(year, month, content);
-        console.log (year + '.' + month + '.' + content + ' - ' + desc);
+        //console.log (year + '.' + month + '.' + content + ' - ' + desc);
         break;
       }
       case 'NIGHTSHIFT': {
@@ -270,4 +289,4 @@ let tooltipElem;
         tooltipElem.remove();
         tooltipElem = null;
       }
-};
+    };

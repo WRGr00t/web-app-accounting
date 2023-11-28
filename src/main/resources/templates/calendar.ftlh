@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
         <link rel="stylesheet" type="text/css" href="static/style.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" />
     <title>InShiftApp</title>
     <link rel="icon" href="static/img/favicon.ico" type="image/x-icon">
 
@@ -17,7 +18,9 @@
         </div>
         <div class="desc">
             <div id="person"></div>
+            <i class="fas fa-angle-left prev"></i>
             <div id="year"></div>
+            <i class="fas fa-angle-right next"></i>
         </div>
         <form>
             <div class="form-control">

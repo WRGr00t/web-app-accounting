@@ -8,6 +8,7 @@ import com.example.webappaccounting.repository.ShiftRepo;
 import com.example.webappaccounting.repository.SubscribeRepo;
 import com.example.webappaccounting.response.ReportResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -40,6 +41,9 @@ public class ParseHelper {
 
     @Autowired
     private SubscribeService subscribeService;
+
+    @Value("${upload.path}")
+    private String UPLOAD_DIR;
 
     public ParseHelper() {
     }
@@ -87,7 +91,7 @@ public class ParseHelper {
                 }
             }
 
-            if (columnList.size() > 0) {
+            if (!columnList.isEmpty()) {
                 int namePosition = 0;
                 int shiftBeginPosition = 3;
                 int typePosition = 1;
@@ -129,6 +133,7 @@ public class ParseHelper {
                                 log.append(newShift)
                                         .append("\n");
                                 shiftsToDB.add(shift);
+                                System.out.println(shift);
                             } else {
                                 Shift shiftForCheck = listInDB.stream().findFirst().get();
                                 if (!shiftForCheck.getDescription().equals(shift.getDescription())) {
@@ -152,23 +157,26 @@ public class ParseHelper {
                 }
             }
         }
+        // берем все смены в базе
         ArrayList<ShiftNative> shiftNativeInDB = (ArrayList<ShiftNative>) shiftsFromDB.stream()
                 .map(shift -> new ShiftNative(
                         shift.getName(),
                         shift.getShiftDate(),
                         shift.getDescription()))
                 .collect(Collectors.toList());
+        // берем все смены в файле
         ArrayList<ShiftNative> shiftNativeInCSV = (ArrayList<ShiftNative>) shiftsFromCSV.stream()
                 .map(shift -> new ShiftNative(
                         shift.getName(),
                         shift.getShiftDate(),
                         shift.getDescription()))
                 .collect(Collectors.toList());
-
+        // складываем в массив смены из базы, которых нет в файле, только по текущему году загрузки
         List<ShiftNative> differences = shiftNativeInDB.stream()
+                .filter(shiftNative -> shiftNative.getShiftDate().getYear() == shiftNativeInCSV.get(0).getShiftDate().getYear())
                 .filter(element -> !shiftNativeInCSV.contains(element))
                 .collect(Collectors.toList());
-
+        // Из различий в базе выбираем в массив смены по сотруднику, дате и описанию
         ArrayList<Shift> differ = new ArrayList<>();
         for (ShiftNative diff : differences) {
             Optional<Shift> optionalShift = shiftRepo.findAllByNameAndShiftDateAndDescription(
@@ -177,10 +185,11 @@ public class ParseHelper {
                     diff.getDescription());
             optionalShift.ifPresent(differ::add);
         }
-        String pathToFile =
-                "src/main/java/com/example/webappaccounting/upload/load.log";
+        String pathToFile = UPLOAD_DIR + "load.log";
+                //"src/main/java/com/example/webappaccounting/upload/load.log";
         //"/root/tmp/upload/load.log";
 
+        // Удаляем все смены, которых больше нет в файле графика и формируем лог
         for (ShiftNative shift: differences) {
             String deleteShift = String.format("удалена смена %s", shift);
             if (subscribeNames.contains(shift.getName())) {
@@ -189,6 +198,8 @@ public class ParseHelper {
             log.append(deleteShift)
                     .append("\n");
         }
+
+        // итоговая рассылка по изменениям
         String resultLog = log.toString();
         System.out.println(resultLog);
         if (!resultLog.isEmpty()) {
@@ -213,9 +224,9 @@ public class ParseHelper {
         if (!file.exists()) {
             file.createNewFile();
         }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String logDateTime = now.format(formatter);
-        log = String.format("%s\n%s", logDateTime, log);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+        String logDateTime = now.format(formatter) + "\n";
+        log = logDateTime + log;
         try(FileWriter writer = new FileWriter(pathToFile, true))
         {
             writer.write(log);
@@ -502,5 +513,15 @@ public class ParseHelper {
         } else {
             changeForSender.put(subscribeName, new ArrayList<>(List.of(change)));
         }
+    }
+
+    public ArrayList<String> getAvailableYears() {
+        ArrayList<String> result = new ArrayList<>();
+        int startYear = shiftRepo.findMinimum().getYear();
+        int finishYear = shiftRepo.findMaximum().getYear();
+        for (int i = startYear; i <= finishYear; i++) {
+            result.add(String.valueOf(i));
+        }
+        return result;
     }
 }

@@ -24,7 +24,7 @@ const renderCalendar = () => {
 
   let shiftObj = [];
 
-  document.querySelector(".date h1").innerHTML = months[date.getMonth()] + " " + date.getFullYear();
+  document.querySelector(".date h1").innerHTML = months[date.getMonth()] + " " + year;
 
 	var options = {
 	  year: 'numeric',

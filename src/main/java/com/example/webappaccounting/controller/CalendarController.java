@@ -28,7 +28,7 @@ public class CalendarController {
     private ParseHelper parseHelper;
 
     @GetMapping("calendar")
-    public String GetCalendar(@RequestParam(name="person", required=false) String person,
+    public String getCalendar(@RequestParam(name="person", required=false) String person,
                               Map<String, Object> model){
 
         if (person == null) {
@@ -50,7 +50,7 @@ public class CalendarController {
     }
 
     @GetMapping("monthcalendar")
-    public String GetMonthCalendar(@RequestParam(name="person", required=false) String person,
+    public String getMonthCalendar(@RequestParam(name="person", required=false) String person,
                               Map<String, Object> model){
 
         if (person == null) {
