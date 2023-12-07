@@ -257,14 +257,17 @@ public class MainController {
 
     @GetMapping("/news")
     public String getNews(Map<String, Object> model) throws IOException {
-
+        int logSize = 200;
         String pathToLog = UPLOAD_DIR + "load.log";
         Path path = Paths.get(pathToLog);
         ArrayList<String> read = (ArrayList<String>) Files.readAllLines(path);
-        model.put("messages", IntStream.rangeClosed(1, read.size())
-                .mapToObj(i -> read.get(read.size() - i))
-                .limit(200)
+        if (read.size() < logSize) {
+            logSize = read.size();
+        }
+        model.put("messages", read.stream()
+                .limit(logSize)
                 .toArray());
+        model.put("limit", String.format("Отображается %d записей лога", logSize));
         return "news";
     }
 }

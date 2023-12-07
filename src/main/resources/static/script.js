@@ -197,9 +197,13 @@ function buildDate(content, month, isAccent = false, status) {
         break;
       }
       case 'DISMISSAL': {
-              cls = cls + ' dismissal';
-              break;
-            }
+        cls = cls + ' dismissal';
+        break;
+      }
+      case 'BTRIP': {
+        cls = cls + ' btrip';
+        break;
+      }
     }
     let result = `<div class="${cls}">${content}</div>`;
     if (desc != null && typeof str !== "undefined") {

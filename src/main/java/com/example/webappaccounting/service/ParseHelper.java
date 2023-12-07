@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -226,10 +227,26 @@ public class ParseHelper {
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
         String logDateTime = now.format(formatter) + "\n";
-        log = logDateTime + log;
-        try(FileWriter writer = new FileWriter(pathToFile, true))
+
+        StringBuilder result = new StringBuilder();
+        result.append(logDateTime)
+                .append(log);
+
+        FileReader fr= new FileReader(pathToFile);
+        Scanner scan = new Scanner(fr);
+        StringBuilder builder = new StringBuilder();
+        while (scan.hasNextLine()) {
+            builder.append(scan.nextLine())
+                    .append('\n');
+        }
+        result.append(builder);
+        fr.close();
+
+        System.out.println(result);
+
+        try(FileWriter writer = new FileWriter(pathToFile, false))
         {
-            writer.write(log);
+            writer.write(result.toString());
             writer.append('\n');
             writer.flush();
         }
@@ -467,6 +484,11 @@ public class ParseHelper {
             case "У":
             case "УВ":{
                 result = Status.DISMISSAL;
+                break;
+            }
+            case "К":
+            case "K": {
+                result = Status.BTRIP;
                 break;
             }
         }

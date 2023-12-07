@@ -1,6 +1,8 @@
 <#import "parts/common.ftlh" as c>
 <#import "parts/login.ftlh" as l>
 <@c.page>
+<H3 class="h3">${limit}</H3>
+<br>
 <table class="table table-striped">
       <thead>
             <tr>

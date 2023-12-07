@@ -22,6 +22,7 @@
                   <a class="dropdown-item" href="/inshift">Список смены</a>
                   <a class="dropdown-item" href="/forpersonal">Ближайшие смены</a>
                   <a class="dropdown-item" href="/calendar">Календарь на год</a>
+                  <a class="dropdown-item" href="/news">История изменений</a>
                   <#-- <a class="dropdown-item" href="/monthcalendar">Календарь на месяц</a> -->
                 </div>
             </li>
