@@ -57,7 +57,7 @@ const renderCalendar = () => {
       for (let x = firstDayIndex - 1; x > 0; x--) {
           let dateHTML;
           dateHTML = `<div class="prev-date">${prevLastDay - x + 1}</div>`;
-          console.log(prevLastDay - x + 1 + "/" + date.getMonth() + "/" + date.getFullYear());
+          //console.log(prevLastDay - x + 1 + "/" + date.getMonth() + "/" + date.getFullYear());
           dayIndex++;
           datesHTML.push(dateHTML);
       }
@@ -68,14 +68,14 @@ const renderCalendar = () => {
       let cls;
       let status;
       let requestURL = "/api/bynameandmonth?name=" + name + "&year=" + year;
-      console.log(requestURL);
+      //console.log(requestURL);
       let job = fetch(requestURL).then(
             successResponse => {
               if (successResponse.status != 200) {
-                console.log("not success");
+                //onsole.log("not success");
                 return null;
               } else {
-                console.log("success");
+                //console.log("success");
                 return successResponse.json();
               }
             },
@@ -84,7 +84,7 @@ const renderCalendar = () => {
             }
       );
       let results = job.then(response => response.json());
-      console.log(results);
+      //console.log(results);
       for (let i = 1; i <= getLastDay(date); i++) {
           let month = date.getMonth() + 1;
           let day = normalize(i);
@@ -97,8 +97,8 @@ const renderCalendar = () => {
                     if (d === dateText){
                         status = job[key].status;
                     }
-                    console.log(dateText);
-                    console.log(status);
+                    //console.log(dateText);
+                    //console.log(status);
                 }
           }
 

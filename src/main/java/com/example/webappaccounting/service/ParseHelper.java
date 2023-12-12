@@ -5,7 +5,6 @@ import com.example.webappaccounting.model.ShiftNative;
 import com.example.webappaccounting.model.Status;
 import com.example.webappaccounting.model.Subscribe;
 import com.example.webappaccounting.repository.ShiftRepo;
-import com.example.webappaccounting.repository.SubscribeRepo;
 import com.example.webappaccounting.response.ReportResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +41,9 @@ public class ParseHelper {
 
     @Autowired
     private SubscribeService subscribeService;
+
+    @Autowired
+    private SendService senderService;
 
     @Value("${upload.path}")
     private String UPLOAD_DIR;
@@ -134,7 +136,7 @@ public class ParseHelper {
                                 log.append(newShift)
                                         .append("\n");
                                 shiftsToDB.add(shift);
-                                System.out.println(shift);
+                                //System.out.println(shift);
                             } else {
                                 Shift shiftForCheck = listInDB.stream().findFirst().get();
                                 if (!shiftForCheck.getDescription().equals(shift.getDescription())) {
@@ -202,7 +204,7 @@ public class ParseHelper {
 
         // итоговая рассылка по изменениям
         String resultLog = log.toString();
-        System.out.println(resultLog);
+        //System.out.println(resultLog);
         if (!resultLog.isEmpty()) {
             sendMail();
             try {
@@ -220,16 +222,13 @@ public class ParseHelper {
     }
 
     private void recordLog(String pathToFile, String log) throws IOException {
-        LocalDateTime now = LocalDateTime.now();
+
         File file = new File(pathToFile);
         if (!file.exists()) {
             file.createNewFile();
         }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
-        String logDateTime = now.format(formatter) + "\n";
-
         StringBuilder result = new StringBuilder();
-        result.append(logDateTime)
+        result.append(setLogDate())
                 .append(log);
 
         FileReader fr= new FileReader(pathToFile);
@@ -242,7 +241,7 @@ public class ParseHelper {
         result.append(builder);
         fr.close();
 
-        System.out.println(result);
+        //System.out.println(result);
 
         try(FileWriter writer = new FileWriter(pathToFile, false))
         {
@@ -253,6 +252,12 @@ public class ParseHelper {
         catch(IOException ex){
             System.out.println(ex.getMessage());
         }
+    }
+
+    private String setLogDate() {
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+        return now.format(formatter) + "\n";
     }
 
     private static boolean isFindNewMonth(String line) {
@@ -498,15 +503,17 @@ public class ParseHelper {
     private void sendMail() {
 
         for (String key : changeForSender.keySet()) {
+
+            String subject = String.format("Изменения в графике %s", setLogDate());
             ArrayList<String> emails = getEmailsForName(key);
             StringBuilder builder = new StringBuilder();
             ArrayList<String> changes = changeForSender.get(key);
             for (String change : changes) {
                 builder.append(change)
-                        .append("/n");
+                        .append("\n");
             }
             for (String email : emails) {
-                //senderService.sendSimpleEmail(email, "Изменения в графике", builder.toString());
+                senderService.sendEmail(email, subject, builder.toString());
             }
         }
     }

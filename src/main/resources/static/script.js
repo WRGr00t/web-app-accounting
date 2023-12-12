@@ -36,7 +36,7 @@ function getPerson(name) {
     }
 
 function getShiftObjs(name) {
-    console.log(name);
+    //console.log(name);
     let requestURL = "/api/bynameandmonth?name=" + name + "&year=" + year;
     return fetch(requestURL)
         .then((result) => result.json())
