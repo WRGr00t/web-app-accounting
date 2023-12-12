@@ -1,6 +1,9 @@
 package com.example.webappaccounting.model;
 
+import javax.swing.text.DateFormatter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class ShiftNative {
@@ -41,11 +44,18 @@ public class ShiftNative {
         this.description = description;
     }
 
+    public String printShift() {
+        LocalDate date = shiftDate;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        String dateString = date.format(formatter);
+        return String.format("%s %s %s", name, dateString, description);
+    }
+
     @Override
     public String toString() {
         return "Shift {" +
                 "employee = '" + name + '\'' +
-                ", date=" + shiftDate +
+                ", date = " + shiftDate +
                 ", interval = '" + description + '\'' +
                 '}';
     }

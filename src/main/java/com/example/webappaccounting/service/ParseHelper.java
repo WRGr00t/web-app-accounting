@@ -121,14 +121,14 @@ public class ParseHelper {
                                     .filter(x -> x.getShiftDate().equals(shift.getShiftDate()))
                                     .filter(x-> x.getName().equals(shift.getName()))
                                     .collect(Collectors.toList());
-
+                            ShiftNative shiftNative = new ShiftNative(
+                                    shift.getName(),
+                                    shift.getShiftDate(),
+                                    shift.getDescription());
                             if (listInDB.isEmpty()) {
+
                                 String newShift = String.format("добавлена смена %s",
-                                        new ShiftNative(
-                                                shift.getName(),
-                                                shift.getShiftDate(),
-                                                shift.getDescription())
-                                );
+                                        shiftNative.printShift());
                                 if (subscribeNames.contains(shift.getName())) {
                                     putToChangeForSubscribe(shift.getName(), newShift);
                                 }
@@ -141,12 +141,9 @@ public class ParseHelper {
                                 Shift shiftForCheck = listInDB.stream().findFirst().get();
                                 if (!shiftForCheck.getDescription().equals(shift.getDescription())) {
                                     shift.setId(shiftForCheck.getId());
+
                                     String changeShift = String.format("изменена смена %s",
-                                            new ShiftNative(
-                                                    shift.getName(),
-                                                    shift.getShiftDate(),
-                                                    shift.getDescription())
-                                                );
+                                            shiftNative.printShift());
                                     if (subscribeNames.contains(shift.getName())) {
                                         putToChangeForSubscribe(shift.getName(), changeShift);
                                     }
@@ -194,7 +191,7 @@ public class ParseHelper {
 
         // Удаляем все смены, которых больше нет в файле графика и формируем лог
         for (ShiftNative shift: differences) {
-            String deleteShift = String.format("удалена смена %s", shift);
+            String deleteShift = String.format("удалена смена %s", shift.printShift());
             if (subscribeNames.contains(shift.getName())) {
                 putToChangeForSubscribe(shift.getName(), deleteShift);
             }
