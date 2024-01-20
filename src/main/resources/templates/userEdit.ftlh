@@ -6,6 +6,11 @@ User editor
 <form action="/user" method="post">
      <div class="input-group mb-3">
         <input type="text" name="username" value="${user.username}">
+        <#if user.email??>
+            <input type="text" name="email" value="${user.email}">
+        <#else>
+            <input type="text" name="email" placeholder="email">
+        </#if>
             <#list roles as role>
                  <div class="input-group-text">
                       <div class="input-group-prepend">

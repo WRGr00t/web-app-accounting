@@ -13,4 +13,6 @@ public interface SubscribeRepo extends JpaRepository<Subscribe, Long> {
     Subscribe findByUsername(String name);
 
     List<Subscribe> findAllMailByUsername(String name);
+
+    List<Subscribe> findByEmail(String mail);
 }

@@ -20,6 +20,8 @@ public class User implements UserDetails {
     @NotBlank(message = "Password cannot be empty")
     private String password;
 
+    private String email;
+
     private boolean active;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
@@ -33,6 +35,13 @@ public class User implements UserDetails {
     public User(String username, String password, boolean active) {
         this.username = username;
         this.password = password;
+        this.active = active;
+    }
+
+    public User(String username, String password, String email, boolean active) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
         this.active = active;
     }
 
@@ -54,6 +63,14 @@ public class User implements UserDetails {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override

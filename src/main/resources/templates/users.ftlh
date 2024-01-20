@@ -6,6 +6,7 @@
     <thead>
         <tr>
             <th scope="col">Пользователь</th>
+            <th scope="col">Email</th>
             <th scope="col">Роли</th>
             <th scope="col">Операции</th>
        </tr>
@@ -14,6 +15,12 @@
         <#list users as user>
         <tr scope="row">
             <td>${user.username}</td>
+            <#if user.email??>
+                <td>${user.email}</td>
+            <#else>
+                <td>Email не установлен</td>
+            </#if>
+
             <td><#list user.roles as role>${role}<#sep>, </#list></td>
             <td><a href="/user/${user.id}">edit</a></td>
         </tr>

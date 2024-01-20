@@ -26,6 +26,10 @@ public class SubscribeService {
         return subscribeRepo.findAll();
     }
 
+    public List<Subscribe> findByMail(String mail) {
+        return subscribeRepo.findByEmail(mail);
+    }
+
     public Subscribe findFirst(String name, String email) {
         return subscribeRepo.findByUsernameAndEmail(name, email);
     }

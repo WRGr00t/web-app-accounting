@@ -34,16 +34,16 @@ public class ParseHelper {
     @Autowired
     private ShiftServiceImpl service;
 
-    /*@Autowired
-    private EmailSenderService senderService;*/
+    @Autowired
+    private EmailService emailService;
 
     private HashMap<String, ArrayList<String>> changeForSender = new HashMap<>();
 
     @Autowired
     private SubscribeService subscribeService;
 
-    @Autowired
-    private SendService senderService;
+    /*@Autowired
+    private SendService senderService;*/
 
     @Value("${upload.path}")
     private String UPLOAD_DIR;
@@ -510,7 +510,7 @@ public class ParseHelper {
                         .append("\n");
             }
             for (String email : emails) {
-                senderService.sendEmail(email, subject, builder.toString());
+                emailService.sendSimpleMessage(email, subject, builder.toString());
             }
         }
     }
