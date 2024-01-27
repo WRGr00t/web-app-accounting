@@ -11,7 +11,7 @@ import java.util.Properties;
 
 @ComponentScan(basePackages = { "com.example.webappaccounting" })
 @PropertySource(value={"classpath:application.properties"})
-public class EmailConfiguration {
+public class EmailConfig {
     @Value("${spring.mail.host}")
     private String mailServerHost;
 

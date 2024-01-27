@@ -32,7 +32,6 @@ public class UploadController {
 
     @Autowired
     private ParseHelper parseHelper;
-    //private static String UPLOAD_DIR = "src/main/java/com/example/webappaccounting/upload";
     @Value("${upload.path}")
     private String UPLOAD_DIR;
 
@@ -79,7 +78,6 @@ public class UploadController {
 
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println(e.getMessage());
         }
 
         return "redirect:/uploadStatus";

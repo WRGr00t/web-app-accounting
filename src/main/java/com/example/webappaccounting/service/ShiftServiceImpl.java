@@ -3,9 +3,11 @@ package com.example.webappaccounting.service;
 import com.example.webappaccounting.model.Shift;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 @Service("jpaShiftService")

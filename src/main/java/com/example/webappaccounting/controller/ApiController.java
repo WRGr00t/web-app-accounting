@@ -28,15 +28,20 @@ public class ApiController {
     ParseHelper parseHelper;
 
     @GetMapping
-    public String list() {
-        ArrayList<Shift> shiftIterable = (ArrayList<Shift>) shiftRepo.findAllByShiftDate(LocalDate.now());
+    public String list(@RequestParam(required = false) String requestDate) {
+
+        LocalDate date;
+        if (requestDate == null) {
+            date = LocalDate.now();
+        } else date = LocalDate.parse(requestDate);
+        ArrayList<Shift> shiftIterable = (ArrayList<Shift>) shiftRepo.findAllByShiftDate(date);
 
         StringBuilder dayShift = new StringBuilder();
-        StringBuilder nigthShift = new StringBuilder();
+        StringBuilder nightShift = new StringBuilder();
         for (Shift s : shiftIterable) {
             if (parseHelper.isShiftTime(s.getDescription()) && !s.getShiftType().equals("8*5")) {
                 if (parseHelper.isNightShift(s)) {
-                    nigthShift.append(s.getName())
+                    nightShift.append(s.getName())
                             .append("\n");
                 } else {
                     dayShift.append(s.getName())
@@ -46,7 +51,7 @@ public class ApiController {
         }
         dayShift
                 .append("В ночь:\n")
-                .append(nigthShift);
+                .append(nightShift);
         return dayShift.toString().trim();
     }
 
