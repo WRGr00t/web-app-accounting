@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -34,7 +35,7 @@ public class ApiController {
         if (requestDate == null) {
             date = LocalDate.now();
         } else date = LocalDate.parse(requestDate);
-        ArrayList<Shift> shiftIterable = (ArrayList<Shift>) shiftRepo.findAllByShiftDate(date);
+        ArrayList<Shift> shiftIterable = (ArrayList<Shift>) shiftRepo.findAllByShiftDateOrderByShiftTypeAsc(date);
 
         StringBuilder dayShift = new StringBuilder();
         StringBuilder nightShift = new StringBuilder();
@@ -55,14 +56,47 @@ public class ApiController {
         return dayShift.toString().trim();
     }
 
-    @GetMapping("{id}")
-    public Shift getOne(@PathVariable Long id) {
+    @GetMapping("/{id}")
+    public Shift getOne(@PathVariable long id) {
         return getShift(id);
     }
 
     @GetMapping("/byname")
     public ArrayList<LocalDate> getByName(@RequestParam String name, @RequestParam int year) {
         return getShiftByName(name, year);
+    }
+
+    @GetMapping("/2weeksname")
+    public ArrayList<String> getFor2Weeks() {
+        return getNameBy2Weeks();
+    }
+
+    private ArrayList<String> getNameBy2Weeks() {
+        List<String> shifts = shiftRepo.findAllNameBetweenDate(LocalDate.now(), LocalDate.now().plusWeeks(2));
+
+        return (ArrayList<String>) shifts;
+    }
+
+    @GetMapping("/2week")
+    public String getFor2Weeks(@RequestParam String name) {
+        ArrayList<String> result;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        Locale localeRu = new Locale("ru", "RU");
+        result = (ArrayList<String>) getShiftsByName2Weeks(name).stream()
+                .map(shift -> shift.getShiftDate().format(formatter) + " - " +
+                        shift.getShiftDate().getDayOfWeek().getDisplayName(TextStyle.FULL, localeRu) + " - " +
+                        shift.getDescription())
+                .collect(Collectors.toList());
+        StringBuilder builder = new StringBuilder();
+        for (String res : result) {
+            builder.append(res)
+                    .append('\n');
+        }
+        return builder.toString();
+    }
+
+    private ArrayList<Shift> getShiftsByName2Weeks(String name) {
+        return getShiftByName2weeks(name);
     }
 
     @GetMapping("/isnight")
@@ -123,6 +157,17 @@ public class ApiController {
                 .map(Shift::getShiftDate)
                 .collect(Collectors.toList());
         return (ArrayList<LocalDate>) result;
+    }
+
+    private ArrayList<Shift> getShiftByName2weeks(String name) {
+        ArrayList<Shift> list = (ArrayList<Shift>) shiftRepo.findAllByNameAndShiftDateBetween(
+                name,
+                LocalDate.now(),
+                LocalDate.now().plusWeeks(2));
+        List<Shift> result = list.stream()
+                .filter(shift -> Pattern.matches("^\\d{1,2}\\-\\d{1,2}$", shift.getDescription()))
+                .collect(Collectors.toList());
+        return (ArrayList<Shift>) result;
     }
 
 

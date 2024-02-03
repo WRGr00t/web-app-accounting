@@ -39,7 +39,6 @@ public class MainController {
     @Autowired
     private ParseHelper helper;
 
-    //private static String UPLOAD_DIR = "src/main/java/com/example/webappaccounting/upload/";
     @Value("${upload.path}")
     private String UPLOAD_DIR;
 
@@ -124,12 +123,10 @@ public class MainController {
         model.put("dateStart", startDay);
         model.put("dateEnd", endDay);
 
-        //TreeMap<String, Integer> counter = new TreeMap<>();
         TreeSet<ReportResponse> responses = new TreeSet<>();
         HashSet<String> names = (HashSet<String>) helper.getNameInRange(startDay, endDay);
         for (String name : names) {
             responses.add(helper.getCountWorkingHoursInRange(name, startDay, endDay));
-            //counter.put(name, helper.getCountWorkingHoursInRange(name, startDay, endDay));
         }
 
 

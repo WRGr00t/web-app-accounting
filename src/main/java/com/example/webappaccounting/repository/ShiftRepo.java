@@ -56,4 +56,9 @@ public interface ShiftRepo extends CrudRepository<Shift, Long> {
     @Query(value = "Select max(shift_date) from shifts", nativeQuery = true)
     LocalDate findMaximum();
 
+    List<Shift> findAllByShiftDateOrderByShiftTypeAsc(LocalDate date);
+
+    @Query(value = "SELECT DISTINCT employee_name FROM shifts WHERE (shift_date BETWEEN :dayStart AND :dayEnd) AND shift_type!='8*5'", nativeQuery = true)
+    List<String> findAllNameBetweenDate(LocalDate dayStart,
+                                        LocalDate dayEnd);
 }
