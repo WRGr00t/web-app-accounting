@@ -83,6 +83,7 @@ public class ApiController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         Locale localeRu = new Locale("ru", "RU");
         result = (ArrayList<String>) getShiftsByName2Weeks(name).stream()
+                .sorted()
                 .map(shift -> shift.getShiftDate().format(formatter) + " - " +
                         shift.getShiftDate().getDayOfWeek().getDisplayName(TextStyle.FULL, localeRu) + " - " +
                         shift.getDescription())
