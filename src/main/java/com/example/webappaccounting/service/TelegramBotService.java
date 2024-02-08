@@ -67,7 +67,7 @@ public class TelegramBotService extends TelegramLongPollingBot {
                         updateMessage.getChat().getFirstName());
                     break;
 
-                case "/tomorrow": tomorrowCommandReceived(chatId, updateMessage.getFrom().getUserName());
+                case "/tomorrow": tomorrowCommandReceived(chatId, updateMessage.getFrom().getFirstName());
                     break;
 
                 case "/2weeks": get2WeeksCommandReceived(chatId);
