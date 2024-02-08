@@ -162,7 +162,7 @@ public class TelegramBotService extends TelegramLongPollingBot {
         sendMessage(chatId, findAllByDate());
         log.info("Пользователь " +
                 username +
-                " запросил список смены на завтра");
+                " запросил список смены на сегодня");
     }
 
     private void addList(StringBuilder builder, ArrayList<Shift> list) {
