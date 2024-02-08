@@ -71,7 +71,7 @@ public class TelegramBotService extends TelegramLongPollingBot {
                 case "/2weeks": get2WeeksCommandReceived(chatId);
                     break;
                 default:
-                    sendMessage(chatId, "Не понял вопрос, повторите понятнее. Пока умею только команды из меню, а именно:\n/start\n/today\n/tomorrow");
+                    sendMessage(chatId, "Не понял вопрос, повторите понятнее. Пока умею только команды из меню, а именно:\n/start\n/today\n/tomorrow\n/2weeks");
             }
             
         } else if (update.hasCallbackQuery()) {
@@ -83,6 +83,9 @@ public class TelegramBotService extends TelegramLongPollingBot {
             String answer = "Ближайшие смены для " + callbackData + ":\n" + shiftDates;
             executeEditMessageText(answer, chatId, messageId);
             //sendMessage(chatId, shiftDates);
+            log.info("Пользователь " +
+                    update.getCallbackQuery().getFrom().getFirstName() +
+                    " запросил ближайшие смены для " + callbackData);
 
         }
 
