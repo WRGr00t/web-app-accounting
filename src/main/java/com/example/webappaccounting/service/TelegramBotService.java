@@ -62,10 +62,12 @@ public class TelegramBotService extends TelegramLongPollingBot {
                 );
                     break;
 
-                case "/today": todayCommandReceived(chatId);
+                case "/today": todayCommandReceived(
+                        chatId,
+                        updateMessage.getChat().getFirstName());
                     break;
 
-                case "/tomorrow": tomorrowCommandReceived(chatId);
+                case "/tomorrow": tomorrowCommandReceived(chatId, updateMessage.getFrom().getUserName());
                     break;
 
                 case "/2weeks": get2WeeksCommandReceived(chatId);
@@ -147,14 +149,20 @@ public class TelegramBotService extends TelegramLongPollingBot {
         }
     }
 
-    private void tomorrowCommandReceived(long chatId) {
+    private void tomorrowCommandReceived(long chatId, String username) {
         sendMessage(chatId, findAllByDate(LocalDate.now().plusDays(1)));
+        log.info("Пользователь " +
+                username +
+                " запросил список смены на завтра");
     }
 
-    private void todayCommandReceived(long chatId) {
+    private void todayCommandReceived(long chatId, String username) {
 
 
         sendMessage(chatId, findAllByDate());
+        log.info("Пользователь " +
+                username +
+                " запросил список смены на завтра");
     }
 
     private void addList(StringBuilder builder, ArrayList<Shift> list) {
