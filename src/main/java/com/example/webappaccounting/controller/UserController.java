@@ -79,6 +79,7 @@ public class UserController {
                 .collect(Collectors.toList());
 
         if (user.getEmail() != null) {
+            model.put("mail", user.getEmail());
             ArrayList<Subscribe> list = (ArrayList<Subscribe>) subscribeService.findByMail(user.getEmail());
             if (!list.isEmpty()) {
                 model.put("subscribes", list);
@@ -87,16 +88,13 @@ public class UserController {
             }
 
         } else {
+            model.put("mail", "Не установлен");
             model.put("message2", "Сначала установите e-mail");
         }
         if (person == null) {
             person = "";
         }
-        if (user.getEmail() != null || !user.getEmail().isEmpty()) {
-            model.put("mail", user.getEmail());
-        } else {
-            model.put("mail", "Не установлен");
-        }
+
         if (user.getRoles().contains(Role.ADMIN)) {
             model.put("admin", true);
         }
