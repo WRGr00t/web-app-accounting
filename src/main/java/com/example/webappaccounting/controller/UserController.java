@@ -109,11 +109,10 @@ public class UserController {
 
     @PostMapping("profile")
     public String updateProfile(@AuthenticationPrincipal User user,
-                                @RequestParam(required = false) String username,
                                 @RequestParam(required = false) String email,
                                 @RequestParam(required = false) String nameForSubscribe,
                                 @RequestParam(required = false) String password) {
-        userService.updateProfile(user, username, email, nameForSubscribe, password);
+        userService.updateProfile(user, email, nameForSubscribe, password);
 
         return "redirect:/user/profile";
     }

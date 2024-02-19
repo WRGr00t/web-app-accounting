@@ -75,14 +75,10 @@ public class UserService implements UserDetailsService {
     }
 
     public void updateProfile(User user,
-                              String username,
                               String email,
                               String nameForSubscribe,
                               String password) {
 
-        if (!StringUtils.isEmpty(username) && !user.getUsername().equals(username)) {
-            user.setUsername(username);
-        }
         if (!StringUtils.isEmpty(password)) {
             user.setPassword(passwordEncoder.encode(password));
         }
