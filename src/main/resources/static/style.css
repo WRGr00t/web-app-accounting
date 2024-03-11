@@ -96,6 +96,25 @@ body {
   text-align: center;
   background: LightCoral;
 }
+.light {
+  text-shadow: 1px 1px 1px #fff;
+  width: 10em;
+  height: 10em;
+  border-radius: 50%;
+  line-height: 10em;
+  text-align: center;
+  background: #30A3BC;
+}
+
+.hard {
+  text-shadow: 1px 1px 1px #fff;
+  width: 10em;
+  height: 10em;
+  border-radius: 50%;
+  line-height: 10em;
+  text-align: center;
+  background: #BEE181;
+}
 
 .btrip {
   text-shadow: 1px 1px 1px #fff;

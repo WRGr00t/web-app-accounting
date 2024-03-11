@@ -6,5 +6,8 @@ public enum Status {
     HOLIDAY,
     SICKDAY,
     DISMISSAL,
-    BTRIP
+    BTRIP,
+    LIGHT,
+    HARD,
+    NOTDEFINE
 }

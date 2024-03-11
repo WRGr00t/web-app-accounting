@@ -180,7 +180,16 @@ function buildDate(content, month, isAccent = false, status) {
       case 'DAYSHIFT': {
         cls = cls + ' day';
         desc = getDescription(year, month, content);
-        //console.log (year + '.' + month + '.' + content + ' - ' + desc);
+        break;
+      }
+      case 'LIGHT': {
+        cls = cls + ' light';
+        desc = getDescription(year, month, content);
+        break;
+      }
+      case 'HARD': {
+        cls = cls + ' hard';
+        desc = getDescription(year, month, content);
         break;
       }
       case 'NIGHTSHIFT': {

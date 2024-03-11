@@ -68,14 +68,11 @@ const renderCalendar = () => {
       let cls;
       let status;
       let requestURL = "/api/bynameandmonth?name=" + name + "&year=" + year;
-      //console.log(requestURL);
       let job = fetch(requestURL).then(
             successResponse => {
               if (successResponse.status != 200) {
-                //onsole.log("not success");
                 return null;
               } else {
-                //console.log("success");
                 return successResponse.json();
               }
             },
@@ -84,7 +81,6 @@ const renderCalendar = () => {
             }
       );
       let results = job.then(response => response.json());
-      //console.log(results);
       for (let i = 1; i <= getLastDay(date); i++) {
           let month = date.getMonth() + 1;
           let day = normalize(i);

@@ -349,6 +349,22 @@ public class ParseHelper {
         return Pattern.matches("^\\d{1,2}\\-\\d{1,2}$", description);
     }
 
+    public Status getTypeShift(String description) {
+        if (isShiftTime(description)) {
+            String[] hours = description.split("-");
+            int duration = Integer.parseInt(hours[1]) - Integer.parseInt(hours[0]);
+            if (duration > 12) {
+                return Status.HARD;
+            } else if (duration < 12) {
+                return Status.LIGHT;
+            } else {
+                return Status.DAYSHIFT;
+            }
+        } else {
+            return Status.NOTDEFINE;
+        }
+    }
+
     public boolean isNightShift(Shift shift) {
         if (isShiftTime(shift.getDescription())) {
             String description = shift.getDescription();
@@ -469,7 +485,7 @@ public class ParseHelper {
 
     public Status getStatus(Shift shift) {
         String desc = shift.getDescription().toUpperCase();
-        Status result = Status.DAYSHIFT;
+        Status result = getTypeShift(desc);
         if (isNightShift(shift)) {
             result = Status.NIGHTSHIFT;
         }
