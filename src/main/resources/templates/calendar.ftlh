@@ -36,6 +36,52 @@
         </form>
     </div>
 
+    <details>
+        <summary class="legend_text">Легенда</summary>
+        <table>
+          <thead>
+            <tr>
+              <th>Описание</th>
+              <th>Вид</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="legend_text">стандартная смена 9-21</td>
+              <td class="month_date day">1</td>
+            </tr>
+            <tr>
+              <td class="legend_text">облегченная смена меньше 12 часов</td>
+              <td class="month_date light">2</td>
+            </tr>
+            <tr>
+              <td class="legend_text">хардкор-смена больше 12 часов</td>
+              <td class="month_date hard">3</td>
+            </tr>
+            <tr>
+               <td class="legend_text">ночная смена</td>
+               <td class="month_date night">4</td>
+            </tr>
+            <tr>
+                <td class="legend_text">отпуск, отсутствие</td>
+                <td class="month_date holiday">5</td>
+            </tr>
+            <tr>
+                <td class="legend_text">больничный</td>
+                <td class="month_date sickday">6</td>
+            </tr>
+            <tr>
+                <td class="legend_text">увольнение</td>
+                <td class="month_date dismissal">7</td>
+            </tr>
+            <tr>
+                <td class="legend_text">командировка</td>
+                <td class="month_date btrip">8</td>
+            </tr>
+          </tbody>
+        </table>
+    </details>
+
     <div id="calendar" class="calendar">
 
     </div>

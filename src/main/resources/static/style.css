@@ -138,6 +138,12 @@ body {
 	grid-gap: 2px;
 }
 
+.legend_text {
+    font-size: 12px;
+    vertical-align: middle;
+    color: #3B6CAE;
+}
+
 .month_date {
 	width: var(--dateSize);
 	height: calc(var(--dateSize) / 2);
