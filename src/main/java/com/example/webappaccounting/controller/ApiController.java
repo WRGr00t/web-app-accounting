@@ -9,6 +9,12 @@ import com.example.webappaccounting.service.ShiftServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -59,6 +65,23 @@ public class ApiController {
     @GetMapping("/{id}")
     public Shift getOne(@PathVariable long id) {
         return getShift(id);
+    }
+
+    @GetMapping("/holidays")
+    public String getHolidays(@RequestParam int year) {
+        String holidays = "";
+        String urlString = "https://www.xmlcalendar.ru/data/ru/" + year + "/calendar.txt";
+        try (InputStream stream = new URL(urlString).openStream()) {
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
+            holidays = reader.lines().collect(Collectors.joining("\n"));
+        } catch (IOException e) {
+
+            e.printStackTrace();
+            holidays = "";
+        }
+        System.out.println(holidays);
+        return holidays;
     }
 
     @GetMapping("/byname")

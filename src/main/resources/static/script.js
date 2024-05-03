@@ -18,9 +18,15 @@ const months = [
 		{name: 'Ноябрь'},
 		{name: 'Декабрь'},
 	]
-
+    let year = new Date().getFullYear()
+    dom.year.innerHTML = year
 	let shiftDates = [];
 	let shiftObj = [];
+	let holidays = getHolidayList(year).then(function(value)
+                           {
+                               holidays = value;
+                               console.log(holidays);
+                           })
 	let currentPerson = '';
 
 function getPerson(name) {
@@ -42,15 +48,19 @@ function getShiftObjs(name) {
         .then((result) => result.json())
 }
 
+function getHolidayList(year) {
+    //console.log(name);
+    let requestURL = "/api/holidays?year=" + year;
+    return fetch(requestURL)
+        .then((result) => result.text())
+}
+
 /*function getShifts(name) {
     let requestURL = "/api/byname?name=" + name + "&year=" + year
     console.log(requestURL)
     return fetch(requestURL)
     .then((result) => result.json())
 }*/
-
-let year = new Date().getFullYear()
-dom.year.innerHTML = year
 
 document.querySelector(".prev").addEventListener("click", () => {
       year = year - 1;
@@ -155,6 +165,7 @@ function buildDates(year, month) {
 	const daysCount = 33 - new Date(year, month, 33).getDate();
 	let i = 1
 	let day = 1
+	console.log(holidays);
 	while (day < daysCount + 1) {
 		let dateHTML;
 		if (weekDayStart > i || (weekDayStart == 0 && i < 7)) {
@@ -163,8 +174,12 @@ function buildDates(year, month) {
 		}
 		else {
 		    let status = getStatus(year, month, day);
-		    let isWeekend = (i + day) % 7 == 0 || (i + day) % 7 == 1;
-			dateHTML = buildDate(day, month, isWeekend, status);
+		    let checkDate = year + "." + normalize(month + 1) + "." + normalize(day);
+		    //console.log(checkDate);
+		    let isHoliday = holidays.includes(checkDate);
+		    //console.log(isHoliday);
+		    //let isWeekend = (i + day) % 7 == 0 || (i + day) % 7 == 1;
+			dateHTML = buildDate(day, month, isHoliday, status);
 			day++;
 		}
 		datesHTML.push(dateHTML)
