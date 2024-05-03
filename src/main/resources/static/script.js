@@ -23,10 +23,9 @@ const months = [
 	let shiftDates = [];
 	let shiftObj = [];
 	let holidays = getHolidayList(year).then(function(value)
-                           {
-                               holidays = value;
-                               console.log(holidays);
-                           })
+       {
+          holidays = value;
+       })
 	let currentPerson = '';
 
 function getPerson(name) {
@@ -42,25 +41,16 @@ function getPerson(name) {
     }
 
 function getShiftObjs(name) {
-    //console.log(name);
     let requestURL = "/api/bynameandmonth?name=" + name + "&year=" + year;
     return fetch(requestURL)
         .then((result) => result.json())
 }
 
 function getHolidayList(year) {
-    //console.log(name);
     let requestURL = "/api/holidays?year=" + year;
     return fetch(requestURL)
         .then((result) => result.text())
 }
-
-/*function getShifts(name) {
-    let requestURL = "/api/byname?name=" + name + "&year=" + year
-    console.log(requestURL)
-    return fetch(requestURL)
-    .then((result) => result.json())
-}*/
 
 document.querySelector(".prev").addEventListener("click", () => {
       year = year - 1;
@@ -129,16 +119,6 @@ function buildWeekDaysNames() {
 	return daysNames.join('')
 }
 
-/*function isShift(year, month, day) {
-    let date = new Date (year, month, day)
-    for (let key in shiftDates) {
-       let shift = new Date(shiftDates[key].split('-'));
-       if (date.getTime() == shift.getTime()) {
-            return true
-       }
-    }
-    return false
-}*/
 function isShift(year, month, day) {
         if(month < 10) {
             month = '0' + month
@@ -165,7 +145,7 @@ function buildDates(year, month) {
 	const daysCount = 33 - new Date(year, month, 33).getDate();
 	let i = 1
 	let day = 1
-	console.log(holidays);
+
 	while (day < daysCount + 1) {
 		let dateHTML;
 		if (weekDayStart > i || (weekDayStart == 0 && i < 7)) {
@@ -175,10 +155,7 @@ function buildDates(year, month) {
 		else {
 		    let status = getStatus(year, month, day);
 		    let checkDate = year + "." + normalize(month + 1) + "." + normalize(day);
-		    //console.log(checkDate);
-		    let isHoliday = holidays.includes(checkDate);
-		    //console.log(isHoliday);
-		    //let isWeekend = (i + day) % 7 == 0 || (i + day) % 7 == 1;
+            let isHoliday = holidays.includes(checkDate);
 			dateHTML = buildDate(day, month, isHoliday, status);
 			day++;
 		}
@@ -235,7 +212,6 @@ function buildDate(content, month, isAccent = false, status) {
     }
     if (desc) {
         result = `<div class="${cls}"data-tooltip="${desc}">${content}</div>`;
-        //console.log(content + '.' + month + ' - ' + desc);
     }
 	return result;
 }
