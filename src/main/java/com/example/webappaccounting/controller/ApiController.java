@@ -76,11 +76,9 @@ public class ApiController {
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
             holidays = reader.lines().collect(Collectors.joining("\n"));
         } catch (IOException e) {
-
             e.printStackTrace();
             holidays = "";
         }
-        System.out.println(holidays);
         return holidays;
     }
 
