@@ -77,7 +77,6 @@ public class ApiController {
         String path = UPLOAD_DIR + "calendar" + year + ".txt";
         File file = new File(path);
         if (!file.exists()) {
-            System.out.println("Calendar not found");
             URL url = new URL("https://www.xmlcalendar.ru/data/ru/" + year + "/calendar.txt");
             Path outputPath = Path.of(path);
             try (InputStream in = url.openStream()) {
