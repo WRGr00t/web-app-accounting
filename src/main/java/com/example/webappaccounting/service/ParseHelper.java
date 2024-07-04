@@ -529,6 +529,7 @@ public class ParseHelper {
                 emailService.sendSimpleMessage(email, subject, builder.toString());
             }
         }
+        changeForSender.clear(); //clear after send
     }
 
     private ArrayList<String> getEmailsForName(String name) {
