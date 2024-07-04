@@ -7,14 +7,15 @@ import com.example.webappaccounting.response.CalendarResponse;
 import com.example.webappaccounting.service.ParseHelper;
 import com.example.webappaccounting.service.ShiftServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -33,6 +34,9 @@ public class ApiController {
     ShiftServiceImpl service;
     @Autowired
     ParseHelper parseHelper;
+
+    @Value("${upload.path}")
+    private String UPLOAD_DIR;
 
     @GetMapping
     public String list(@RequestParam(required = false) String requestDate) {
@@ -68,17 +72,22 @@ public class ApiController {
     }
 
     @GetMapping("/holidays")
-    public String getHolidays(@RequestParam int year) {
+    public String getHolidays(@RequestParam int year) throws IOException {
         String holidays = "";
-        String urlString = "https://www.xmlcalendar.ru/data/ru/" + year + "/calendar.txt";
-        try (InputStream stream = new URL(urlString).openStream()) {
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
-            holidays = reader.lines().collect(Collectors.joining("\n"));
-        } catch (IOException e) {
-            e.printStackTrace();
-            holidays = "";
+        String path = UPLOAD_DIR + "calendar" + year + ".txt";
+        File file = new File(path);
+        if (!file.exists()) {
+            System.out.println("Calendar not found");
+            URL url = new URL("https://www.xmlcalendar.ru/data/ru/" + year + "/calendar.txt");
+            Path outputPath = Path.of(path);
+            try (InputStream in = url.openStream()) {
+                Files.copy(in, outputPath, StandardCopyOption.REPLACE_EXISTING);
+            }
         }
+
+        List<String> lines = Files.readAllLines(file.toPath());
+        holidays = String.join("\n", lines);
+
         return holidays;
     }
 
