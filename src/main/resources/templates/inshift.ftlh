@@ -42,6 +42,16 @@
         <td>${day.shiftType}</td>
     </tr>
 </#list>
+<tr scope="row">
+        <td colspan="3"><b>Дежурная смена</b></td>
+   </tr>
+<#list do as duty>
+    <tr scope="row">
+        <td>${duty.name}</td>
+        <td><i>${duty.description}</i></td>
+        <td>${duty.shiftType}</td>
+    </tr>
+</#list>
     <tr scope="row">
         <td colspan="3"><b>В ночь:</b></td>
     </tr>

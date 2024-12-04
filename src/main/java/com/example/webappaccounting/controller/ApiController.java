@@ -47,23 +47,7 @@ public class ApiController {
         } else date = LocalDate.parse(requestDate);
         ArrayList<Shift> shiftIterable = (ArrayList<Shift>) shiftRepo.findAllByShiftDateOrderByShiftTypeAsc(date);
 
-        StringBuilder dayShift = new StringBuilder();
-        StringBuilder nightShift = new StringBuilder();
-        for (Shift s : shiftIterable) {
-            if (parseHelper.isShiftTime(s.getDescription()) && !s.getShiftType().equals("8*5")) {
-                if (parseHelper.isNightShift(s)) {
-                    nightShift.append(s.getName())
-                            .append("\n");
-                } else {
-                    dayShift.append(s.getName())
-                            .append("\n");
-                }
-            }
-        }
-        dayShift
-                .append("В ночь:\n")
-                .append(nightShift);
-        return dayShift.toString().trim();
+        return parseHelper.getShiftsList(shiftIterable);
     }
 
     @GetMapping("/{id}")

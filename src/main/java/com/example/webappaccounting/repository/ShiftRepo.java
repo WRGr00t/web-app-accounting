@@ -24,6 +24,12 @@ public interface ShiftRepo extends CrudRepository<Shift, Long> {
             LocalDate shiftDate,
             String description);
 
+    Optional<Shift> findAllByNameAndShiftDateAndDescriptionAndIsDuty(
+            String name,
+            LocalDate shiftDate,
+            String description,
+            Boolean isDuty);
+
     Optional<Shift> findAllByShiftDateAndDescriptionAndNameAndShiftType(
             LocalDate shiftDate,
             String description,

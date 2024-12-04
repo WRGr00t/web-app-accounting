@@ -69,17 +69,19 @@ public class MainController {
         ArrayList<Shift> dayShift = new ArrayList<>();
         ArrayList<Shift> shift52 = new ArrayList<>();
         ArrayList<Shift> nightShift = new ArrayList<>();
+        ArrayList<Shift> duty = new ArrayList<>();
 
         LocalDateTime requestDate = helper.StringToLocalDateTime(date);
 
         for (Shift s : shiftIterable) {
             if (s.getShiftDate().atStartOfDay().isAfter(requestDate.minusMinutes(1)) &&
-                    s.getShiftDate().atStartOfDay().isBefore(requestDate.plusMinutes(1)) &&
-                    helper.isShiftTime(s.getDescription())) {
+                    s.getShiftDate().atStartOfDay().isBefore(requestDate.plusMinutes(1))) {
                 if (helper.isNightShift(s)) {
                     nightShift.add(s);
                 } else if (s.getShiftType().equals("8*5")) {
                     shift52.add(s);
+                } else if (s.isDuty()){
+                    duty.add(s);
                 } else {
                     dayShift.add(s);
                 }
@@ -96,6 +98,7 @@ public class MainController {
         model.put("date", localDate);
         model.put("offices", shift52);
         model.put("days", dayShift);
+        model.put("do", duty);
         model.put("nights", nightShift);
 
         return "inshift";

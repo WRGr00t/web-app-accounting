@@ -57,6 +57,16 @@ body {
   background: MistyRose;
 }
 
+.duty {
+  width: 10em;
+  height: 10em;
+  /*border: 2px #AC25FF;*/
+  border-radius: 50%;
+  line-height: 10em;
+  text-align: center;
+  background: DarkSalmon;
+}
+
 .night {
   text-shadow: 1px 1px 1px #fff;
   width: 10em;

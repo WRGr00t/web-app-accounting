@@ -1,5 +1,7 @@
 package com.example.webappaccounting.model;
 
+import org.hibernate.annotations.ColumnDefault;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,6 +26,10 @@ public class Shift implements Comparable<Shift>{
     @Column(name = "shift_type", columnDefinition = "VARCHAR(255)", nullable = false)
     private String shiftType;
 
+    @Column (name = "duty", columnDefinition = "BOOLEAN", nullable = false)
+    @ColumnDefault("false")
+    private boolean isDuty;
+
     public Shift() {
     }
 
@@ -43,6 +49,14 @@ public class Shift implements Comparable<Shift>{
         this.description = description;
         this.name = name;
         this.shiftType = shiftType;
+    }
+
+    public Shift(LocalDate shiftDate, String description, String name, String shiftType, boolean isDuty) {
+        this.shiftDate = shiftDate;
+        this.description = description;
+        this.name = name;
+        this.shiftType = shiftType;
+        this.isDuty = isDuty;
     }
 
     public LocalDate getShiftDate() {
@@ -85,6 +99,14 @@ public class Shift implements Comparable<Shift>{
         this.shiftType = shiftType;
     }
 
+    public boolean isDuty() {
+        return isDuty;
+    }
+
+    public void setDuty(boolean duty) {
+        isDuty = duty;
+    }
+
     @Override
     public String toString() {
         return "Shift{" +
@@ -102,7 +124,8 @@ public class Shift implements Comparable<Shift>{
         Shift shift = (Shift) obj;
         return Objects.equals(shiftDate, shift.shiftDate) &&
                 Objects.equals(description, shift.description) &&
-                Objects.equals(name, shift.name);
+                Objects.equals(name, shift.name) &&
+                Objects.equals(isDuty, shift.isDuty);
     }
 
     @Override

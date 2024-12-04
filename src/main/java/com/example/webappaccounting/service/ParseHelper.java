@@ -101,13 +101,19 @@ public class ParseHelper {
                 String text = columnList.get(namePosition);
 
                 if (IsName(text)) {
+                    boolean isDuty;
                     String type = columnList.get(typePosition);
                     if (!type.isEmpty()) {
                         currentType = type;
                     }
                     for (int i = shiftBeginPosition; i < columnList.size(); i++) {
+                        isDuty = false;
                         String currentColumn = columnList.get(i);
                         if (!currentColumn.isEmpty()) {
+                            if (isDutyShift(currentColumn)) {
+                                isDuty = true;
+                                currentColumn = currentColumn.replace("д", "");
+                            }
                             LocalDate dateShift = LocalDate.of(
                                     Integer.parseInt(currentYear),
                                     getNumberOfMonth(currentMonth),
@@ -115,20 +121,32 @@ public class ParseHelper {
                             Shift shift = new Shift(dateShift,
                                     currentColumn,
                                     text,
-                                    currentType);
+                                    currentType,
+                                    isDuty);
                             shiftsFromCSV.add(shift);
+
+                            //Ищем такую же смену в базе
                             ArrayList<Shift> listInDB = (ArrayList<Shift>) shiftsFromDB.stream()
                                     .filter(x -> x.getShiftDate().equals(shift.getShiftDate()))
-                                    .filter(x-> x.getName().equals(shift.getName()))
+                                    .filter(x -> x.getName().equals(shift.getName()))
+                                    .filter(x -> x.isDuty() == shift.isDuty())
                                     .collect(Collectors.toList());
                             ShiftNative shiftNative = new ShiftNative(
                                     shift.getName(),
                                     shift.getShiftDate(),
-                                    shift.getDescription());
+                                    shift.getDescription(),
+                                    shift.isDuty());
+
+                            System.out.println(listInDB.size());
+
+                            //Если смена уникальная, добавляем
                             if (listInDB.isEmpty()) {
 
+                                //лог изменений
                                 String newShift = String.format("добавлена смена %s",
                                         shiftNative.printShift());
+
+                                //если изменена смена подписанных на рассылку
                                 if (subscribeNames.contains(shift.getName())) {
                                     putToChangeForSubscribe(shift.getName(), newShift);
                                 }
@@ -136,10 +154,11 @@ public class ParseHelper {
                                 log.append(newShift)
                                         .append("\n");
                                 shiftsToDB.add(shift);
-                                //System.out.println(shift);
+                                //если такая смена нашлась
                             } else {
                                 Shift shiftForCheck = listInDB.stream().findFirst().get();
-                                if (!shiftForCheck.getDescription().equals(shift.getDescription())) {
+                                if (!shiftForCheck.getDescription().equals(shift.getDescription()) ||
+                                        (shiftForCheck.isDuty() ^ shift.isDuty())) {
                                     shift.setId(shiftForCheck.getId());
 
                                     String changeShift = String.format("изменена смена %s",
@@ -162,14 +181,16 @@ public class ParseHelper {
                 .map(shift -> new ShiftNative(
                         shift.getName(),
                         shift.getShiftDate(),
-                        shift.getDescription()))
+                        shift.getDescription(),
+                        shift.isDuty()))
                 .collect(Collectors.toList());
         // берем все смены в файле
         ArrayList<ShiftNative> shiftNativeInCSV = (ArrayList<ShiftNative>) shiftsFromCSV.stream()
                 .map(shift -> new ShiftNative(
                         shift.getName(),
                         shift.getShiftDate(),
-                        shift.getDescription()))
+                        shift.getDescription(),
+                        shift.isDuty()))
                 .collect(Collectors.toList());
         // складываем в массив смены из базы, которых нет в файле, только по текущему году загрузки
         List<ShiftNative> differences = shiftNativeInDB.stream()
@@ -179,10 +200,11 @@ public class ParseHelper {
         // Из различий в базе выбираем в массив смены по сотруднику, дате и описанию
         ArrayList<Shift> differ = new ArrayList<>();
         for (ShiftNative diff : differences) {
-            Optional<Shift> optionalShift = shiftRepo.findAllByNameAndShiftDateAndDescription(
+            Optional<Shift> optionalShift = shiftRepo.findAllByNameAndShiftDateAndDescriptionAndIsDuty(
                     diff.getName(),
                     diff.getShiftDate(),
-                    diff.getDescription());
+                    diff.getDescription(),
+                    diff.isDuty());
             optionalShift.ifPresent(differ::add);
         }
         String pathToFile = UPLOAD_DIR + "load.log";
@@ -349,6 +371,10 @@ public class ParseHelper {
         return Pattern.matches("^\\d{1,2}\\-\\d{1,2}$", description);
     }
 
+    public boolean isDutyShift(String desc) {
+        return Pattern.matches("^\\d{1,2}\\-\\d{1,2}+[д]{1}$", desc);
+    }
+
     public Status getTypeShift(String description) {
         if (isShiftTime(description)) {
             String[] hours = description.split("-");
@@ -466,11 +492,10 @@ public class ParseHelper {
 
     public Set<String> getNameInRangeWithout85(LocalDate startRange, LocalDate endRange) {
         ArrayList<Shift> shifts = (ArrayList<Shift>) shiftRepo.findAllByShiftDateBetween(startRange, endRange);
-        Set<String> resultSet = shifts.stream()
+        return shifts.stream()
                 .filter(x -> !x.getShiftType().equals("8*5"))
                 .map(Shift::getName)
                 .collect(Collectors.toSet());
-        return resultSet;
     }
 
     public LocalDate getDateFromString(String date) {
@@ -487,30 +512,18 @@ public class ParseHelper {
         String desc = shift.getDescription().toUpperCase();
         Status result = getTypeShift(desc);
         if (isNightShift(shift)) {
-            result = Status.NIGHTSHIFT;
+            return Status.NIGHTSHIFT;
         }
-        switch (desc) {
-            case "О":
-            case "ОТ": {
-                result = Status.HOLIDAY;
-                break;
-            }
-            case "Б": {
-                result = Status.SICKDAY;
-                break;
-            }
-            case "У":
-            case "УВ":{
-                result = Status.DISMISSAL;
-                break;
-            }
-            case "К":
-            case "K": {
-                result = Status.BTRIP;
-                break;
-            }
+        if (shift.isDuty()) {
+            return Status.DUTYSHIFT;
         }
-        return result;
+        return switch (desc) {
+            case "О", "ОТ" -> Status.HOLIDAY;
+            case "Б" -> Status.SICKDAY;
+            case "У", "УВ" -> Status.DISMISSAL;
+            case "К", "K" -> Status.BTRIP;
+            default -> result;
+        };
     }
 
     private void sendMail() {
@@ -566,5 +579,32 @@ public class ParseHelper {
             result.add(String.valueOf(i));
         }
         return result;
+    }
+
+    public String getShiftsList(Iterable<Shift> shiftIterable) {
+        StringBuilder dayShift = new StringBuilder();
+        StringBuilder nightShift = new StringBuilder();
+        StringBuilder duty = new StringBuilder();
+        for (Shift s : shiftIterable) {
+            if (s.isDuty()) {
+                duty.append(s.getName())
+                        .append("\n");
+            }
+            if (isShiftTime(s.getDescription()) && !s.getShiftType().equals("8*5")) {
+                if (isNightShift(s)) {
+                    nightShift.append(s.getName())
+                            .append("\n");
+                } else {
+                    dayShift.append(s.getName())
+                            .append("\n");
+                }
+            }
+        }
+        dayShift
+                .append("Дежурная смена:\n")
+                .append(duty)
+                .append("В ночь:\n")
+                .append(nightShift);
+        return dayShift.toString().trim();
     }
 }

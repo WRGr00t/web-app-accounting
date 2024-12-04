@@ -174,6 +174,11 @@ function buildDate(content, month, isAccent = false, status) {
         desc = getDescription(year, month, content);
         break;
       }
+      case 'DUTYSHIFT': {
+        cls = cls + ' duty';
+        desc = getDescription(year, month, content);
+        break;
+      }
       case 'LIGHT': {
         cls = cls + ' light';
         desc = getDescription(year, month, content);

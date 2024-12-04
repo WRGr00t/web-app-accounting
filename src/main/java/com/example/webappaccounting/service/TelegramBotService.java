@@ -11,8 +11,10 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -50,24 +52,25 @@ public class TelegramBotService extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         Message updateMessage = update.getMessage();
+        Chat chat = updateMessage.getChat();
+        String user = getUserFromChat(chat);
         if (update.hasMessage() && updateMessage.hasText()){
-
             long chatId = updateMessage.getChatId();
             String message = updateMessage.getText();
 
             switch (message) {
                 case "/start": startCommandReceived(
                         chatId,
-                        updateMessage.getChat().getFirstName()
+                        user
                 );
                     break;
 
                 case "/today": todayCommandReceived(
                         chatId,
-                        updateMessage.getChat().getFirstName());
+                        user);
                     break;
 
-                case "/tomorrow": tomorrowCommandReceived(chatId, updateMessage.getFrom().getFirstName());
+                case "/tomorrow": tomorrowCommandReceived(chatId, user);
                     break;
 
                 case "/2weeks": get2WeeksCommandReceived(chatId);
@@ -84,13 +87,35 @@ public class TelegramBotService extends TelegramLongPollingBot {
             String shiftDates = getShiftDates(callbackData);
             String answer = "Ближайшие смены для " + callbackData + ":\n" + shiftDates;
             executeEditMessageText(answer, chatId, messageId);
+            User usr = update.getCallbackQuery().getFrom();
+            String username = getUserFromCallback(usr);
             //sendMessage(chatId, shiftDates);
             log.info("Пользователь " +
-                    update.getCallbackQuery().getFrom().getFirstName() +
+                    username +
                     " запросил ближайшие смены для " + callbackData);
 
         }
 
+    }
+
+    private String getUserFromChat(Chat chat) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(chat.getFirstName())
+                .append(' ')
+                .append(chat.getLastName())
+                .append(" aka ")
+                .append(chat.getUserName());
+        return builder.toString();
+    }
+
+    private String getUserFromCallback(User user) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(user.getFirstName())
+                .append(' ')
+                .append(user.getLastName())
+                .append(" aka ")
+                .append(user.getUserName());
+        return builder.toString();
     }
 
     private String getShiftDates(String callbackData) {

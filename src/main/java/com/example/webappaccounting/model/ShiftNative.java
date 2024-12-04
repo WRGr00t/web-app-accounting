@@ -10,6 +10,7 @@ public class ShiftNative {
     private String name;
     private LocalDate shiftDate;
     private String description;
+    private boolean isDuty;
 
     public ShiftNative() {
     }
@@ -18,6 +19,13 @@ public class ShiftNative {
         this.name = name;
         this.shiftDate = shiftDate;
         this.description = description;
+    }
+
+    public ShiftNative(String name, LocalDate shiftDate, String description, boolean isDuty) {
+        this.name = name;
+        this.shiftDate = shiftDate;
+        this.description = description;
+        this.isDuty = isDuty;
     }
 
     public String getName() {
@@ -48,7 +56,15 @@ public class ShiftNative {
         LocalDate date = shiftDate;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         String dateString = date.format(formatter);
-        return String.format("%s %s %s", name, dateString, description);
+        return String.format("%s %s %s %s", name, dateString, description, isDuty?" - дежурный": "");
+    }
+
+    public boolean isDuty() {
+        return isDuty;
+    }
+
+    public void setDuty(boolean duty) {
+        isDuty = duty;
     }
 
     @Override
@@ -67,6 +83,7 @@ public class ShiftNative {
         ShiftNative shift = (ShiftNative) obj;
         return Objects.equals(shiftDate, shift.getShiftDate()) &&
                 Objects.equals(description, shift.getDescription()) &&
-                Objects.equals(name, shift.getName());
+                Objects.equals(name, shift.getName()) &&
+                (isDuty == shift.isDuty);
     }
 }
